@@ -1,0 +1,35 @@
+
+html {
+  font-family: monospace;
+  font-size: 2em;
+  background-color: #7ED7C1;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+main {
+  margin:  auto 200px;
+}
+
+.answer {
+  color: rgb(0, 100, 116);
+}
+
+.selected {
+  color: white;
+}
+
+.question-guide, .navigation-guide {
+  font-style: italic;
+}
+
+.number-box {
+  font-weight: bold;
+}
+
+#photo-path {
+  font-size: 0.75em;
+}
