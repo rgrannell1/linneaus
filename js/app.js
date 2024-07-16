@@ -1,201 +1,329 @@
 
-import { API } from "./api.js";
-import { Background } from "./background.js";
-import { Keys } from "./constants.js";
+import { html, LitElement } from "/js/library/lit.js";
+import { API } from "/js/api.js";
+import { Keys } from "/js/constants.js";
 
-const api = new API();
-const background = new Background();
+const BACKGROUNDS = [
+  "#7ED7C1",
+  "#957ED7",
+  "#D77E94",
+  "#C1D77E"
+]
 
-class App {
-  constructor(questions) {
-    this.index = 0;
+export class LitElem extends LitElement {
+  createRenderRoot() {
+    return this;
+  }
+
+  broadcast(label, detail) {
+    return () => {
+      const dispatched = new CustomEvent(label, {
+        detail,
+        bubbles: true,
+        composed: true,
+      });
+
+      this.dispatchEvent(dispatched);
+    };
+  }
+}
+
+export class WhatsThatApp extends LitElem {
+  static get properties() {
+    return {
+      imageUrl: {
+        type: String,
+        state: true
+      },
+      imagePath: {
+        type: String,
+        state: true
+      },
+      questions: {
+        type: Array,
+        state: true
+      },
+      questionIndex: {
+        type: Number,
+        state: true
+      },
+      photoCount: {
+        type: Number,
+        state: true
+      },
+      photoIndex: {
+        type: Number,
+        state: true
+      },
+      questionsAnswered: {
+        type: Number,
+        state: true
+      },
+      selectedOption: {
+        type: Number,
+        state: true
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    this.imageUrl = '';
+    this.questions = [];
     this.questionIndex = 0;
+    this.photoCount = 0;
+    this.photoIndex = 0;
+    this.questionsAnswered = 0;
+
+    this.api = new API();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    addEventListener('keydown', this.handleKeyDown.bind(this));
+
+    this.loadQuestions()
+      .then(() => this.loadPhotoCount())
+      .then(() => this.loadAnsweredCount())
+      .then(() => this.loadFileInfo());
+  }
+
+  async loadQuestions() {
+    const {questions} = await this.api.getQuestions();
     this.questions = questions;
   }
 
-  selectedQuestion() {
-    return this.questions[this.questionIndex];
+  async loadPhotoCount() {
+    const question = this.questions[this.questionIndex];
+    this.photoCount = await this.api.photoCount(question.question_id);
   }
 
-  async onImageLoad() {
-    const question = this.selectedQuestion();
+  async loadAnsweredCount() {
+    const question = this.questions[this.questionIndex];
+    const {count} = await this.api.getAnswerCount(question.question_id)
+    this.questionsAnswered = count;
+  };
 
-    $('#photo-index').text(this.index);
-    $('#preview-image').attr('src', API.photoUrl(this.index));
-    this.drawOptionsList();
-    this.renderFilename();
-
-    const { answer } = await api.getAnswer(this.index, question.question_id);
+  async loadAnswer() {
+    const question = this.questions[this.questionIndex];
+    const answer = await this.api.getAnswer(this.photoIndex, question.question_id);
 
     if (answer) {
-      this.selectAnswer(answer);
+      this.selectedOption = parseInt(answer.answer, 10);
     }
   }
 
-  async onQuestionChange() {
-    this.updateQuestion();
-    this.drawOptionsList();
-    this.updateAnsweredCount();
-    this.updatePhotoCount();
+  async loadFileInfo() {
+    const name = await this.api.info(this.photoIndex);
 
-    await this.capPhotoIndex();
-    await this.onImageLoad();
+    this.imagePath = name;
   }
 
-  async onUp() {
-    this.questionIndex++;
-    if (this.questionIndex >= this.questions.length) {
-      this.questionIndex = 0;
-    }
+  async saveAnswer(option) {
+    const question = this.questions[this.questionIndex];
 
-    await this.onQuestionChange();
-    background.setNextBackground();
+    return this.api.saveAnswer(
+      this.photoIndex,
+      question.question_id,
+      option,
+      question.choices[option - 1]
+    )
   }
-  async onDown() {
+
+  renderNavigationInstructions() {
+    return html`
+      <p class="navigation-guide">Navigate between photos with ←, →</p>
+      <p class="navigation-guide">Navigate between questions with ↑, ↓</p>
+    `
+  }
+
+  renderContent() {
+    const url = API.photoUrl(this.photoIndex);
+
+    return html`
+    <image width="600" id="preview-image" src="${url}"></image>
+    `
+  }
+
+  onUp() {
     this.questionIndex--;
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
     }
 
-    await this.onQuestionChange();
-    background.setPreviousBackground();
-  }
+    this.loadPhotoCount().then(() => {
+      if (this.photoIndex > this.photoCount - 1) {
+        this.photoIndex = this.photoCount - 1;
+      }
+    });
+    this.loadAnsweredCount();
+    this.loadAnswer();
 
-  async onLeft() {
-    this.index--;
-    const question = this.selectedQuestion();
-
-    if (this.index < 0) {
-      this.index = await api.photoCount(question.question_id) - 1;
+    if (this.photoIndex > this.photoCount - 1) {
+      this.photoIndex = this.photoCount - 1;
     }
 
-    await this.onImageLoad();
-  };
-  async onRight() {
-    this.index++;
+  }
 
-    const question = this.selectedQuestion();
-
-    if (this.index > await api.photoCount(question.question_id) - 1) {
-      this.index = 0;
+  onDown() {
+    this.questionIndex++;
+    if (this.questionIndex >= this.questions.length) {
+      this.questionIndex = 0;
     }
 
-    await this.onImageLoad();
-  }
-
-  async renderFilename() {
-    const name = await api.info(this.index);
-
-    $("#photo-path").text(name);
-  }
-
-  selectAnswer(option) {
-    $('.answers-list li').each(li => {
-      $(li).removeClass('selected');
+    this.loadPhotoCount().then(() => {
+      if (this.photoIndex > this.photoCount - 1) {
+        this.photoIndex = this.photoCount - 1;
+      }
     });
 
-    $(`.answers-${option}`).addClass('selected');
+    this.loadAnsweredCount();
+    this.loadAnswer();
   }
 
-  async updateAnsweredCount() {
-    const question = this.selectedQuestion();
-    const {count} = await api.getAnswerCount(question.question_id)
+  onLeft() {
+    this.photoIndex--;
 
-    $('#photo-answered-count').text(count);
-
-    const photoCount = await api.photoCount(question.question_id);
-    const percentage = (count / photoCount) * 100
-
-    if (percentage === 100) {
-      $('#photo-answered-percentage').text(`🎉 100`);
-    } else {
-      $('#photo-answered-percentage').text(Math.round(percentage, 2));
+    if (this.photoIndex < 0) {
+      this.photoIndex = this.photoCount - 1;
     }
 
-  }
-  drawOptionsList() {
-    const question = this.selectedQuestion();
-
-    const ul = $('<ul></ul>');
-    ul.toggleClass('answers-list');
-
-    question.choices.forEach((option, idx) => {
-      const answers = `answers answers-${idx + 1}`;
-      const li = $(`<li class="${answers}"></li>`);
-      li.html(`<span class="number-box">[${idx + 1}]</span> ${option}`);
-      ul.append(li);
-    });
-
-    $('#options').html(ul);
-    return ul;
-  }
-  updateQuestion() {
-    const question = this.selectedQuestion();
-    $('#question').text(`[${question.question_id}] ${question.question}`);
+      this.loadFileInfo();
+      this.loadAnswer();
   }
 
-  async updatePhotoCount() {
-    const question = this.selectedQuestion();
+  onRight() {
+    this.photoIndex++;
 
-    $('#photo-count').text(await api.photoCount(question.question_id));
+    if (this.photoIndex > this.photoCount - 1) {
+      this.photoIndex = 0;
+    }
+
+    this.loadFileInfo();
+    this.loadAnswer();
   }
 
-  async capPhotoIndex() {
-    const count = await api.photoCount(this.selectedQuestion().question_id);
-    if (this.index >= count) {
-      this.index = count - 1;
+  handlePickOneKeypress(event) {
+    const question = this.questions[this.questionIndex];
+
+    for (let option = 1; option <= question.choices.length; option++) {
+      if (event.keyCode == 48 + option) {
+        this.selectedOption = option;
+        this.saveAnswer(option).then(() => {
+          return this.loadAnsweredCount();
+        });
+      }
     }
   }
 
-  async saveAnswer(option, choice) {
-    this.selectAnswer(option);
+  handleKeyDown(event) {
+    if (event.keyCode == Keys.LEFT) {
+      this.onLeft();
+    } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
+      this.onRight();
+    } else if (event.keyCode == Keys.UP) {
+      this.onUp();
+    } else if (event.keyCode == Keys.DOWN) {
+      this.onDown();
+    }
 
-    const question = this.selectedQuestion()
-    await api.saveAnswer(this.index, question.question_id, option, choice);
-    await this.updateAnsweredCount();
+    const question = this.questions[this.questionIndex];
+    if (question.type === "pick-one") {
+      this.handlePickOneKeypress(event)
+    }
+  }
+
+  incrementQuestionIndex() {
+    this.questionIndex++;
+    if (this.questionIndex >= this.questions.length) {
+      this.questionIndex = 0;
+    }
+  }
+
+  decrementQuestionIndex() {
+    this.questionIndex--;
+    if (this.questionIndex < 0) {
+      this.questionIndex = this.questions.length - 1;
+    }
+  }
+
+  renderPhotoProgress() {
+    const percentage = Math.round(this.questionsAnswered / this.photoCount) * 100;
+    const answeredPercentage = `${percentage}` === '100'
+      ? '100% 🎉'
+      : percentage
+
+    return html`
+    <p>
+      photo <span id="photo-index">${this.photoIndex+1}</span> of <span id="photo-count">${this.photoCount}</span> |
+      <span id="photo-answered-count">${this.questionsAnswered}</span> answered (<span id="photo-answered-percentage">${answeredPercentage}</span>)
+    </p>
+    `
+  }
+
+  renderFileInfo() {
+    return html`<p id="photo-path">${this.imagePath}</p>`
+  }
+
+  renderQuestion() {
+    const question = this.questions[this.questionIndex];
+
+    if (!question) {
+      return html``
+    }
+    return html`
+    <div>
+    <h2>[${question.question_id}] ${question.question}</h2>
+
+    </div>
+    `
+  }
+
+  renderInput() {
+    const question = this.questions[this.questionIndex];
+
+    if (!question) {
+      return html``
+    }
+
+    const choices = question.choices ?? [];
+
+    return html`
+      <ul class="answers-list">
+        ${
+          choices.map((choice, idx) => {
+            const classes = this.selectedOption === idx + 1
+              ? "selected"
+              : "";
+
+            return html`<li class="${classes}">[${idx+1}] ${choice}</li>`
+          })
+        }
+      </ul>
+    `
+  }
+
+  render() {
+    const backgroundModulus = this.questionIndex % BACKGROUNDS.length;
+    const backgroundColour = BACKGROUNDS[backgroundModulus];
+
+    document.querySelector('html').style.backgroundColor = backgroundColour;
+
+   return html`
+   <body>
+    <h1>What's That?</h1>
+
+    ${this.renderNavigationInstructions()}
+    ${this.renderContent()}
+    ${this.renderPhotoProgress()}
+
+    ${this.renderFileInfo()}
+
+    ${this.renderQuestion()}
+    ${this.renderInput()}
+   </body>
+    `;
   }
 }
 
-
-// start the app
-$(document).ready(async function() {
-  const {questions} = await api.getQuestions();
-
-  const state = new App(questions);
-  const question = state.selectedQuestion();
-
-  if (question.type === "pick-one") {
-    state.drawOptionsList();
-  }
-
-  state.updateQuestion();
-
-  state.updatePhotoCount()
-  await Promise.all([
-    state.updateAnsweredCount(),
-    state.onImageLoad()
-  ]);
-
-  $(window).bind('keydown', async function (event) {
-    if (event.keyCode == Keys.LEFT) {
-      await state.onLeft();
-    } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
-      await state.onRight();
-    } else if (event.keyCode == Keys.UP) {
-      await state.onUp();
-    } else if (event.keyCode == Keys.DOWN) {
-      await state.onDown();
-    }
-
-    const question = state.selectedQuestion();
-
-    if (question.type === "pick-one") {
-      for (let option = 1; option <= question.choices.length; option++) {
-        if (event.keyCode == 48 + option) {
-          await state.saveAnswer(option);
-        }
-      }
-    }
-
-  });
-});
+customElements.define("whats-that-app", WhatsThatApp);

@@ -9,6 +9,10 @@ export class API {
     const res = await fetch(`${ENDPOINT}/questions`);
     return res.json();
   }
+  /*
+   * Get information about a photo
+   *
+   */
   async info(idx) {
     const res = await fetch(`${ENDPOINT}/photos/${idx}/info`);
     return res.text();
