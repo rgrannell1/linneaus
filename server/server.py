@@ -9,13 +9,6 @@ from state import State
 from typing import List
 
 
-PHOTO_DIR = '/home/rg/Photos'
-DB_PATH = '/home/rg/.mirror-manifest.db'
-
-
-
-
-
 class WhatsThisServer:
   def __init__(self, db: Database, questions: List[Question]):
     self.db = db
@@ -56,9 +49,12 @@ class WhatsThisServer:
       fpath = self.state.images()[idx]
 
       option = content['option']
+      print(content)
 
       self.db.add_answer(fpath, question, option)
-      return "ok"
+      return {
+        "option": option
+      }
 
     @self.app.route('/photos/<question>/answer_count')
     def get_answer_count(question):
@@ -94,6 +90,8 @@ class WhatsThisServer:
 
 if __name__ == '__main__':
   from questions import questions
+
+  DB_PATH = '/home/rg/.mirror-manifest.db'
 
   server = WhatsThisServer(Database(DB_PATH), questions)
   server.run()

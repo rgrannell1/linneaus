@@ -56,6 +56,19 @@ q03 = Question(
   ]
 )
 
+q03_5 = Question(
+  question_id="q03_5",
+  depends_on=["q03:Unsure"],
+  question="What conditions did these animals live in?",
+  type="pick-one",
+  choices=[
+    "Captivity",
+    "Wild",
+    "Unsure",
+    "Other"
+  ]
+)
+
 q04 = Question(
   question_id="q04",
   depends_on=["q02:Amphibian"],
@@ -166,6 +179,7 @@ questions = [
   q01,
   q02,
   q03,
+  q03_5,
   q04,
   q05,
   q06,
