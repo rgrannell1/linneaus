@@ -1,16 +1,22 @@
 
-import { whatsThisApp, whatsThisServices, startApp } from './index.ts';
-import { questions } from './questions.ts';
+// Mirror-Specific Code
+
+import { startApp, whatsThisApp, whatsThisServices } from "./src/index.ts";
+import { questions } from "./questions.ts";
+import { MirrorContent } from "./mirror.ts";
 
 type Content = string;
 type ContentMetadata = {
   fpath: string;
-}
+};
 
-const services = await whatsThisServices(questions);
+const input = new MirrorContent();
+const content = await input.getContent();
+
+const services = await whatsThisServices(content, questions);
 const config = {
-  port: 5000
-}
+  port: 5_000,
+};
 
-const app = whatsThisApp({  }, {  });
-await startApp<Content, ContentMetadata>(app, services, config)
+const app = whatsThisApp(services, config);
+await startApp<Content, ContentMetadata>(app, services, config);

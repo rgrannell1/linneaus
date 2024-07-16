@@ -1,60 +1,60 @@
-
-import type { Config, Question, Services } from './types/index.ts';
+import type { Config, Question, Services } from "./types/index.ts";
 import { Application, oakCors, Router } from "./deps.ts";
-import { WhatsItStorage } from "./storage.ts";
+import { SqliteStorage } from "./storage.ts";
 import {
-  getQuestions,
-  getContent,
-  getContentMetadata,
-  getContentCount,
-  setAnswer,
   getAnswer,
-  getAnswerCount
-} from './routes.ts';
-import { DenoKVBackend } from './backends/deno.ts';
+  getAnswerCount,
+  getContent,
+  getContentCount,
+  getContentMetadata,
+  setAnswer,
+} from "./routes.ts";
 
-export async function startApp<Content, ContentMetadata>(app, services: Services<Content, ContentMetadata>, config: Config) {
+export async function startApp<Content, ContentMetadata>(
+  app,
+  services: Services<Content, ContentMetadata>,
+  config: Config,
+) {
   const controller = new AbortController();
 
   app.listen({
     port: config.port,
-    signal: config.signal
+    signal: config.signal,
   });
 
   await Promise.all([
-    services.storage.close()
-  ])
+    services.storage.close(),
+  ]);
 
   return controller;
 }
 
-export async function whatsThisServices(questions: Question[]) {
-  const backend = new DenoKVBackend();
-  await backend.init();
-
-  const storage = new WhatsItStorage(backend);
+export async function whatsThisServices<Content>(
+  content: Content[],
+  questions: Question[],
+) {
+  const storage = new SqliteStorage();
   await storage.init(questions);
 
   return {
     storage,
-    questions
-  }
+    content,
+    questions,
+  };
 }
 
-export function whatsThisRouter<Content, ContentMetadata>(services: Services<Content, ContentMetadata>, config: Config): Router {
+export function whatsThisRouter<Content, ContentMetadata>(
+  services: Services<Content, ContentMetadata>,
+  config: Config,
+): Router {
   const router = new Router();
 
   router
     .get(
-      '/questions',
-      oakCors(),
-      getQuestions(config, services))
-
-  /*
-    .get(
       '/content/:questionId/count',
       oakCors(),
       getContentCount(config, services))
+  /*
     .post(
       '/content/:index/:questionId/answer',
       oakCors(),
@@ -80,7 +80,7 @@ export function whatsThisRouter<Content, ContentMetadata>(services: Services<Con
 }
 
 export function whatsThisApp(services, config) {
-  const router = whatsThisRouter(config, services);
+  const router = whatsThisRouter(services, config);
   const app = new Application();
 
   app

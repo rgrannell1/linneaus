@@ -1,4 +1,3 @@
-
 export class Keys {
   static LEFT = 37;
   static RIGHT = 39;

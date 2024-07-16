@@ -1,14 +1,13 @@
-
 export class Background {
   constructor() {
-    this.colourIndex = 0
+    this.colourIndex = 0;
   }
   COLOURS = [
     "#7ED7C1",
     "#957ED7",
     "#D77E94",
-    "#C1D77E"
-  ]
+    "#C1D77E",
+  ];
 
   nextBackground() {
     this.colourIndex++;
@@ -30,11 +29,11 @@ export class Background {
 
   setNextBackground() {
     const colour = this.nextBackground();
-    $('html').css('background-color', colour);
+    $("html").css("background-color", colour);
   }
 
   setPreviousBackground() {
     const colour = this.previousBackground();
-    $('html').css('background-color', colour);
+    $("html").css("background-color", colour);
   }
 }

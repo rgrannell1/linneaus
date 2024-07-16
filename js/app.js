@@ -1,4 +1,3 @@
-
 import { html, LitElement } from "/js/library/lit.js";
 import { API } from "/js/api.js";
 import { Keys } from "/js/constants.js";
@@ -7,8 +6,8 @@ const BACKGROUNDS = [
   "#7ED7C1",
   "#957ED7",
   "#D77E94",
-  "#C1D77E"
-]
+  "#C1D77E",
+];
 
 export class LitElem extends LitElement {
   createRenderRoot() {
@@ -33,42 +32,42 @@ export class WhatsThatApp extends LitElem {
     return {
       imageUrl: {
         type: String,
-        state: true
+        state: true,
       },
       imagePath: {
         type: String,
-        state: true
+        state: true,
       },
       questions: {
         type: Array,
-        state: true
+        state: true,
       },
       questionIndex: {
         type: Number,
-        state: true
+        state: true,
       },
       photoCount: {
         type: Number,
-        state: true
+        state: true,
       },
       photoIndex: {
         type: Number,
-        state: true
+        state: true,
       },
       questionsAnswered: {
         type: Number,
-        state: true
+        state: true,
       },
       selectedOption: {
         type: Number,
-        state: true
-      }
+        state: true,
+      },
     };
   }
 
   constructor() {
     super();
-    this.imageUrl = '';
+    this.imageUrl = "";
     this.questions = [];
     this.questionIndex = 0;
     this.photoCount = 0;
@@ -80,7 +79,7 @@ export class WhatsThatApp extends LitElem {
 
   connectedCallback() {
     super.connectedCallback();
-    addEventListener('keydown', this.handleKeyDown.bind(this));
+    addEventListener("keydown", this.handleKeyDown.bind(this));
 
     this.loadQuestions()
       .then(() => this.loadPhotoCount())
@@ -89,7 +88,7 @@ export class WhatsThatApp extends LitElem {
   }
 
   async loadQuestions() {
-    const {questions} = await this.api.getQuestions();
+    const { questions } = await this.api.getQuestions();
     this.questions = questions;
   }
 
@@ -100,13 +99,16 @@ export class WhatsThatApp extends LitElem {
 
   async loadAnsweredCount() {
     const question = this.questions[this.questionIndex];
-    const {count} = await this.api.getAnswerCount(question.question_id)
+    const { count } = await this.api.getAnswerCount(question.question_id);
     this.questionsAnswered = count;
-  };
+  }
 
   async loadAnswer() {
     const question = this.questions[this.questionIndex];
-    const answer = await this.api.getAnswer(this.photoIndex, question.question_id);
+    const answer = await this.api.getAnswer(
+      this.photoIndex,
+      question.question_id,
+    );
 
     if (answer) {
       this.selectedOption = parseInt(answer.answer, 10);
@@ -126,15 +128,15 @@ export class WhatsThatApp extends LitElem {
       this.photoIndex,
       question.question_id,
       option,
-      question.choices[option - 1]
-    )
+      question.choices[option - 1],
+    );
   }
 
   renderNavigationInstructions() {
     return html`
       <p class="navigation-guide">Navigate between photos with ←, →</p>
       <p class="navigation-guide">Navigate between questions with ↑, ↓</p>
-    `
+    `;
   }
 
   renderContent() {
@@ -142,7 +144,7 @@ export class WhatsThatApp extends LitElem {
 
     return html`
     <image width="600" id="preview-image" src="${url}"></image>
-    `
+    `;
   }
 
   onUp() {
@@ -162,7 +164,6 @@ export class WhatsThatApp extends LitElem {
     if (this.photoIndex > this.photoCount - 1) {
       this.photoIndex = this.photoCount - 1;
     }
-
   }
 
   onDown() {
@@ -188,8 +189,8 @@ export class WhatsThatApp extends LitElem {
       this.photoIndex = this.photoCount - 1;
     }
 
-      this.loadFileInfo();
-      this.loadAnswer();
+    this.loadFileInfo();
+    this.loadAnswer();
   }
 
   onRight() {
@@ -229,7 +230,7 @@ export class WhatsThatApp extends LitElem {
 
     const question = this.questions[this.questionIndex];
     if (question.type === "pick-one") {
-      this.handlePickOneKeypress(event)
+      this.handlePickOneKeypress(event);
     }
   }
 
@@ -248,42 +249,45 @@ export class WhatsThatApp extends LitElem {
   }
 
   renderPhotoProgress() {
-    const percentage = Math.round(this.questionsAnswered / this.photoCount) * 100;
-    const answeredPercentage = `${percentage}` === '100'
-      ? '100% 🎉'
-      : percentage
+    const percentage = Math.round(this.questionsAnswered / this.photoCount) *
+      100;
+    const answeredPercentage = `${percentage}` === "100"
+      ? "100% 🎉"
+      : percentage;
 
     return html`
     <p>
-      photo <span id="photo-index">${this.photoIndex+1}</span> of <span id="photo-count">${this.photoCount}</span> |
+      photo <span id="photo-index">${
+      this.photoIndex + 1
+    }</span> of <span id="photo-count">${this.photoCount}</span> |
       <span id="photo-answered-count">${this.questionsAnswered}</span> answered (<span id="photo-answered-percentage">${answeredPercentage}</span>)
     </p>
-    `
+    `;
   }
 
   renderFileInfo() {
-    return html`<p id="photo-path">${this.imagePath}</p>`
+    return html`<p id="photo-path">${this.imagePath}</p>`;
   }
 
   renderQuestion() {
     const question = this.questions[this.questionIndex];
 
     if (!question) {
-      return html``
+      return html``;
     }
     return html`
     <div>
     <h2>[${question.question_id}] ${question.question}</h2>
 
     </div>
-    `
+    `;
   }
 
   renderInput() {
     const question = this.questions[this.questionIndex];
 
     if (!question) {
-      return html``
+      return html``;
     }
 
     const choices = question.choices ?? [];
@@ -291,25 +295,23 @@ export class WhatsThatApp extends LitElem {
     return html`
       <ul class="answers-list">
         ${
-          choices.map((choice, idx) => {
-            const classes = this.selectedOption === idx + 1
-              ? "selected"
-              : "";
+      choices.map((choice, idx) => {
+        const classes = this.selectedOption === idx + 1 ? "selected" : "";
 
-            return html`<li class="${classes}">[${idx+1}] ${choice}</li>`
-          })
-        }
+        return html`<li class="${classes}">[${idx + 1}] ${choice}</li>`;
+      })
+    }
       </ul>
-    `
+    `;
   }
 
   render() {
     const backgroundModulus = this.questionIndex % BACKGROUNDS.length;
     const backgroundColour = BACKGROUNDS[backgroundModulus];
 
-    document.querySelector('html').style.backgroundColor = backgroundColour;
+    document.querySelector("html").style.backgroundColor = backgroundColour;
 
-   return html`
+    return html`
    <body>
     <h1>What's That?</h1>
 

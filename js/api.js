@@ -1,9 +1,8 @@
-
 const ENDPOINT = `http://localhost:5000`;
 
 export class API {
   static photoUrl(id) {
-    return `${ENDPOINT}/photos/${id}#time=${Date.now()}`
+    return `${ENDPOINT}/photos/${id}#time=${Date.now()}`;
   }
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);
@@ -11,7 +10,6 @@ export class API {
   }
   /*
    * Get information about a photo
-   *
    */
   async info(idx) {
     const res = await fetch(`${ENDPOINT}/photos/${idx}/info`);
@@ -31,15 +29,15 @@ export class API {
   }
   async saveAnswer(idx, question, option, choice) {
     await fetch(`${ENDPOINT}/photos/${idx}/${question}/answer`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         question,
         option,
-        choice
+        choice,
       }),
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
   }
 }
