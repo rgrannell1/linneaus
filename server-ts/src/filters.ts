@@ -1,29 +1,42 @@
-import { Answer, Content } from "./types";
+/*
+ * Some questions only make sense depending on other questions. For example.
+ *
+ * - What countries have you visited?
+ * - What's your favourite place to visit in Ireland?
+ *
+ * Only makes sense if 'Ireland' is in the first answer.
+ *
+ * This file provides filters to help you select questions that contextually make sense.
+ */
 
-export class Filters {
-  /*
-   * Return a filter function. The filter function will return only the content
-   * with a question: answer associated
-   */
-  static questionAnswer(questionId: string, expectedAnswer: string) {
-    return (content: Content[], answers: Answer[]): Content[] => {
-      const matchingIds: Set<string> = new Set([]);
+import { Answer, Content } from "./types/index.ts";
 
-      for (const answer of answers) {
-        if (answer.questionId === questionId && answer.answer === expectedAnswer) {
-          matchingIds.add(answer.contentId);
-        }
+/*
+ * Find content with a specific question answered, with the expected answer
+ */
+export function answeredQuestion(questionId: string, expectedAnswer: string) {
+  return (content: Content[], answers: Answer[]): Content[] => {
+    const matchingIds: Set<string> = new Set([]);
+
+    for (const answer of answers) {
+      if (
+        answer.questionId === questionId && answer.answer === expectedAnswer
+      ) {
+        matchingIds.add(answer.contentId);
       }
-
-      return content.filter(entry => {
-        return matchingIds.has(entry.id)
-      });
     }
-  }
 
-  static allContent() {
-    return (content: Content[], _: Answer[]): Content[] => {
-      return content;
-    }
-  }
+    return content.filter((entry) => {
+      return matchingIds.has(entry.id);
+    });
+  };
+}
+
+/*
+ * Return all content
+ */
+export function allContent() {
+  return (content: Content[], _: Answer[]): Content[] => {
+    return content;
+  };
 }

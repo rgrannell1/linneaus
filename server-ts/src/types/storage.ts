@@ -44,6 +44,14 @@ export type Services<Content, ContentMetadata> = {
  * Implementations of this interface can supply content
  * to What's That?
  */
-export interface IContent<Content> {
-  getContent(): Promise<Content[]>;
+export interface IContentLoader<Content> {
+  init(): Promise<void>;
+  getContent(): AsyncGenerator<Content>;
+  close(): Promise<void>;
+}
+
+export interface IQuestionLoader<Question> {
+  init(): Promise<void>;
+  getQuestions(): AsyncGenerator<Question>;
+  close(): Promise<void>;
 }

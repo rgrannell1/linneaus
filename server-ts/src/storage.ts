@@ -1,6 +1,6 @@
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 
-import type { Answer, IDB, Question } from "./types/index.ts";
+import type { Answer, IDB, IQuestionLoader, Question } from "./types/index.ts";
 
 const QUESTIONS_TABLE = `
 create table if not exists questions (
@@ -24,10 +24,12 @@ export class SqliteStorage<Content, ContentMetadata>
     this.db = new DB(fpath);
   }
 
-  async init(questions: Question[]) {
-    await Promise.all([QUESTIONS_TABLE, ANSWERS_TABLE].map(table => this.db.query(table)));
+  async init(questionLoader: IQuestionLoader<Question>) {
+    await Promise.all(
+      [QUESTIONS_TABLE, ANSWERS_TABLE].map((table) => this.db.query(table)),
+    );
 
-    for (const { id, text } of questions) {
+    for await (const { id, text } of questionLoader.getQuestions()) {
       await this.db.query(
         "insert or replace into questions (id, text) values (?, ?)",
         [id, text],
@@ -35,8 +37,10 @@ export class SqliteStorage<Content, ContentMetadata>
     }
   }
 
-  async getAnswers(): Promise<Answer[]> {
-    return await this.db.query(`select * from answers`);
+  async *getAnswers(): AsyncGenerator<Answer> {
+    for (const row in this.db.query(this.query)) {
+      yield row;
+    }
   }
 
   async getContentCount(): Promise<Number> {

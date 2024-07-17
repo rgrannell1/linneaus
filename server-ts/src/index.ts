@@ -1,4 +1,9 @@
-import type { Config, Question, Services } from "./types/index.ts";
+import type {
+  Config,
+  IContentLoader,
+  IQuestionLoader,
+  Services,
+} from "./types/index.ts";
 import { Application, oakCors, Router } from "./deps.ts";
 import { SqliteStorage } from "./storage.ts";
 import {
@@ -29,17 +34,17 @@ export async function startApp<Content, ContentMetadata>(
   return controller;
 }
 
-export async function whatsThisServices<Content>(
-  content: Content[],
-  questions: Question[],
+export async function whatsThisServices<Content, Question>(
+  contentLoader: IContentLoader<Content>,
+  questionsLoader: IQuestionLoader<Question>,
 ) {
   const storage = new SqliteStorage();
-  await storage.init(questions);
+  await storage.init(questionsLoader as any);
 
   return {
     storage,
-    content,
-    questions,
+    contentLoader,
+    questionsLoader,
   };
 }
 
@@ -51,9 +56,10 @@ export function whatsThisRouter<Content, ContentMetadata>(
 
   router
     .get(
-      '/content/:questionId/count',
+      "/content/:questionId/count",
       oakCors(),
-      getContentCount(config, services))
+      getContentCount(config, services),
+    );
   /*
     .post(
       '/content/:index/:questionId/answer',

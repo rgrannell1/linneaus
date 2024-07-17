@@ -4,13 +4,13 @@ export type Config = {
 };
 
 export interface Answer {
-  contentId:  string;
+  contentId: string;
   questionId: string;
-  answer:     string;
+  answer: string;
 }
 
 export interface Content {
-  id:    string;
+  id: string;
   value: string;
 }
 
@@ -21,3 +21,7 @@ export interface Question {
 }
 
 export * from "./storage.ts";
+export type ContentFilter = (
+  content: Content[],
+  answers: Answer[],
+) => Content[];

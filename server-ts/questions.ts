@@ -1,6 +1,5 @@
-
-import { Filters } from "./src/filters.ts";
-
+import * as Filters from "./src/filters.ts";
+import { LiteralQuestionLoader } from "./src/questions.ts";
 
 const q01 = {
   id: "q01",
@@ -19,7 +18,7 @@ const q01 = {
 const q02 = {
   id: "q02",
   type: "pick-one",
-  relevantContent: Filters.questionAnswer("q01", "Wildlife"),
+  relevantContent: Filters.answeredQuestion("q01", "Wildlife"),
   text: "What wildlife is the subject of this photo?",
   choices: [
     "Bird",
@@ -31,6 +30,6 @@ const q02 = {
     "Multiple",
     "Other",
   ],
-}
+};
 
-export const questions = [q01, q02];
+export const questions = new LiteralQuestionLoader([q01, q02]);

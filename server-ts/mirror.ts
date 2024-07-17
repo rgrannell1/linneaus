@@ -1,24 +1,32 @@
 import { DB } from "./src/deps.ts";
-import { Content, IContent } from "./src/types/index.ts";
+import { SqliteContent } from "./src/content.ts";
 
 const DB_PATH = "/home/rg/.mirror-manifest.db";
 
-export class MirrorContent implements IContent<string> {
+type PhotoContent = {
+  id: string;
+  fpath: string;
+};
+
+function transformer(row): PhotoContent {
+  return {
+    id: row[0],
+    fpath: row[0],
+  };
+}
+
+export class MirrorContentLoader extends SqliteContent<PhotoContent> {
   db: DB;
 
-  constructor() {
-    this.db = new DB(DB_PATH);
-  }
-
-  async getContent(): Promise<Content[]> {
-    const content = await this.db.query(`
+  constructor(dbPath: string = DB_PATH) {
+    const db = new DB(dbPath);
+    const query = `
       select fpath from images where published = '1'
       order by fpath
-    `);
+    `;
+    super(db, query, transformer);
 
-    // an ID, and the content. For photos it might be the same.
-    return content.map((row: any) => {
-      return [row[0], row[0]];
-    });
+    this.db = db;
+    this.transformer = transformer;
   }
 }
