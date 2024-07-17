@@ -1,3 +1,4 @@
+
 export type Config = {
   port: number;
   signal?: AbortSignal;
@@ -9,11 +10,6 @@ export interface Answer {
   answer: string;
 }
 
-export interface Content {
-  id: string;
-  value: string;
-}
-
 export interface Question {
   id: string;
   type: string;
@@ -21,7 +17,7 @@ export interface Question {
 }
 
 export * from "./storage.ts";
-export type ContentFilter = (
+export type ContentFilter<Content> = (
   content: Content[],
   answers: Answer[],
 ) => Content[];

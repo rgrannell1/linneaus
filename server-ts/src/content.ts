@@ -12,7 +12,6 @@ type RowTransformer<Content> = (row: unknown) => Content;
 
 /*
  * Read Sqlite content from a file
- *
  */
 export class SqliteContent<Content> implements IContentLoader<Content> {
   db: DB;
@@ -44,7 +43,6 @@ export class SqliteContent<Content> implements IContentLoader<Content> {
 
 /*
  * Read CSV content from a file
- *
  */
 export class CSVContent<Content> implements IContentLoader<Content> {
   fpath: string;
@@ -79,7 +77,6 @@ export class CSVContent<Content> implements IContentLoader<Content> {
 
 /*
  * Read JSON content from a file.
- *
  */
 export class JSONContent<Content> implements IContentLoader<Content> {
   fpath: string;

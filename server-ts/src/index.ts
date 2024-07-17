@@ -11,13 +11,12 @@ import {
   getAnswerCount,
   getContent,
   getContentCount,
-  getContentMetadata,
   setAnswer,
 } from "./routes.ts";
 
-export async function startApp<Content, ContentMetadata>(
+export async function startApp (
   app,
-  services: Services<Content, ContentMetadata>,
+  services: Services,
   config: Config,
 ) {
   const controller = new AbortController();
@@ -49,39 +48,38 @@ export async function whatsThisServices<Content, Question>(
 }
 
 export function whatsThisRouter<Content, ContentMetadata>(
-  services: Services<Content, ContentMetadata>,
+  services: Services,
   config: Config,
 ): Router {
   const router = new Router();
 
   router
     .get(
-      "/content/:questionId/count",
+      "/questions/:questionId/contentCount",
       oakCors(),
       getContentCount(config, services),
-    );
-  /*
+    )
+    .get(
+      "/content/:contentId",
+      oakCors(),
+      getContent(config, services),
+    )
+    .get(
+      "/answers/:questionId/content/:contentId",
+      oakCors(),
+      getAnswer(config, services),
+    )
+    .get(
+      "/answers/:questionId/contentCount",
+      oakCors(),
+      getAnswerCount(config, services),
+    )
     .post(
-      '/content/:index/:questionId/answer',
+      "/answers/:questionId/content/:contentId",
       oakCors(),
-      setAnswer(config, services))
-    .get(
-      '/content/:index/:questionId/answer',
-      oakCors(),
-      getAnswer(config, services))
-    .get(
-      '/content/:questionId/answer/count',
-      oakCors(),
-      getAnswerCount(config, services))
-    .get(
-      '/content/:index',
-      oakCors(),
-      getContent(config, services))
-    .get(
-      '/content/:index/metadata',
-      oakCors(),
-      getContentMetadata(config, services))
-      */
+      setAnswer(config, services),
+    );
+
   return router;
 }
 

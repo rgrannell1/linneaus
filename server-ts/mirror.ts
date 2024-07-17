@@ -8,13 +8,21 @@ type PhotoContent = {
   fpath: string;
 };
 
+/*
+ * Convert each row to a PhotoContent object
+ */
 function transformer(row): PhotoContent {
+  const [fpath] = row;
+
   return {
-    id: row[0],
-    fpath: row[0],
+    id: fpath,
+    fpath,
   };
 }
 
+/*
+ * Load images from the Sqlite database
+ */
 export class MirrorContentLoader extends SqliteContent<PhotoContent> {
   db: DB;
 

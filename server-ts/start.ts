@@ -1,7 +1,7 @@
 // Mirror-Specific Code
 
 import { startApp, whatsThisApp, whatsThisServices } from "./src/index.ts";
-import { questions } from "./questions.ts";
+import { questionLoader } from "./questions.ts";
 import { MirrorContentLoader } from "./mirror.ts";
 
 type MirrorContent = {
@@ -9,13 +9,9 @@ type MirrorContent = {
   fpath: string;
 };
 
-type MirrorContentMetadata = {
-  fpath: string;
-};
-
 const contentLoader = new MirrorContentLoader();
 
-const services = await whatsThisServices(contentLoader, questions);
+const services = await whatsThisServices(contentLoader, questionLoader);
 const config = {
   port: 5_000,
 };

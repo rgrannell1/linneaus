@@ -1,43 +1,34 @@
-import { Question } from "./index.ts";
 
-/*
- * Server routes. Implement these yourself for
- * different types of content.
- */
-export interface IGetContentCount {
-  getContentCount(): Promise<Number>;
+import { Answer, Question } from "./index.ts";
+
+export interface IInit {
+  init(questionLoader: IQuestionLoader<Question>): Promise<void>;
 }
-
-export interface IGetContent<Content> {
-  getContent(): Promise<Content>;
-}
-
-export interface IAddQuestion<Question> {
-  addQuestion(question: Question): Promise<void>;
-}
-
-export interface IGetContentMetadata<ContentMetadata> {
-  getContentMetadata(): Promise<ContentMetadata>;
-}
-
-export interface IGetAnswer {}
 
 export interface IClose {
   close(): Promise<void>;
+}
+
+export interface IGetAnswers {
+  getAnswers(): AsyncGenerator<Answer>;
+}
+
+export interface ISetAnswer {
+  setAnswer(answer: Answer): Promise<void>;
 }
 
 /*
  * This is the interface required by the What's That?
  * server
  */
-export type IDB<Content, ContentMetadata> =
-  & IGetContentCount
-  & IGetContent<Content>
-  & IGetContentMetadata<ContentMetadata>
-  & IClose;
+export type IDB =
+  & IInit
+  & IClose
+  & IGetAnswers
+  & ISetAnswer;
 
-export type Services<Content, ContentMetadata> = {
-  storage: IDB<Content, ContentMetadata>;
+export type Services = {
+  storage: IDB;
 };
 
 /*

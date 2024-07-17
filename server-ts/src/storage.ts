@@ -17,8 +17,8 @@ create table if not exists answers (
 );
 `;
 
-export class SqliteStorage<Content, ContentMetadata>
-  implements IDB<Content, ContentMetadata> {
+export class SqliteStorage
+  implements IDB {
   db: DB;
   constructor(fpath: string = ".whatsit.db") {
     this.db = new DB(fpath);
@@ -38,21 +38,18 @@ export class SqliteStorage<Content, ContentMetadata>
   }
 
   async *getAnswers(): AsyncGenerator<Answer> {
-    for (const row in this.db.query(this.query)) {
+    const query = "select * from answers";
+
+    for (const row of this.db.query(query)) {
       yield row;
     }
   }
 
-  async getContentCount(): Promise<Number> {
-    return 0;
-  }
-
-  async getContent<Content>(): Promise<Content> {
-    return 0 as any;
-  }
-
-  async getContentMetadata(): Promise<ContentMetadata> {
-    return 0 as any;
+  async setAnswer(answer: Answer) {
+    await this.db.query(
+      "insert or replace into answers (contentId, questionId, answer) values (?, ?, ?)",
+      [answer.contentId, answer.questionId, answer.answer],
+    );
   }
 
   async close() {}

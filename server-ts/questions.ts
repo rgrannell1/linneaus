@@ -32,4 +32,4 @@ const q02 = {
   ],
 };
 
-export const questions = new LiteralQuestionLoader([q01, q02]);
+export const questionLoader = new LiteralQuestionLoader([q01, q02]);
