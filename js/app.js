@@ -82,7 +82,7 @@ export class LinneausApp extends LitElem {
     addEventListener("keydown", this.handleKeyDown.bind(this));
 
     this.loadQuestions()
-      .then(() => this.loadPhotoCount())
+      .then(() => this.loadContentCount())
       .then(() => this.loadAnsweredCount())
   }
 
@@ -90,13 +90,13 @@ export class LinneausApp extends LitElem {
     this.questions = await this.api.getQuestions();
   }
 
-  async loadPhotoCount() {
+  async loadContentCount() {
     if (!this.questions) {
       return html``;
     }
 
     const question = this.questions[this.questionIndex];
-    this.photoCount = await this.api.photoCount(question.id);
+    this.photoCount = await this.api.contentCount(question.id);
   }
 
   async loadAnsweredCount() {
@@ -121,6 +121,9 @@ export class LinneausApp extends LitElem {
   }
 
   async saveAnswer(option) {
+    if (!this.questions) {
+      return;
+    }
     const question = this.questions[this.questionIndex];
 
     return this.api.saveAnswer(
@@ -153,7 +156,7 @@ export class LinneausApp extends LitElem {
       this.questionIndex = this.questions.length - 1;
     }
 
-    this.loadPhotoCount().then(() => {
+    this.loadContentCount().then(() => {
       if (this.photoIndex > this.photoCount - 1) {
         this.photoIndex = Math.max(0, this.photoCount - 1);
       }
@@ -172,7 +175,7 @@ export class LinneausApp extends LitElem {
       this.questionIndex = 0;
     }
 
-    this.loadPhotoCount().then(() => {
+    this.loadContentCount().then(() => {
       if (this.photoIndex > this.photoCount - 1) {
         this.photoIndex = Math.max(0, this.photoCount - 1);
       }

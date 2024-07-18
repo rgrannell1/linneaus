@@ -9,9 +9,10 @@ export class API {
     return res.json();
   }
 
-  async photoCount(question) {
+  async contentCount(question) {
     const res = await fetch(`${ENDPOINT}/questions/${question}/contentCount`);
-    const { count } = res.json();
+    const { count }  = await res.json();
+
 
     return count;
   }
