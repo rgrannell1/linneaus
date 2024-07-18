@@ -16,8 +16,10 @@ create table if not exists questions (
 const ANSWERS_TABLE = `
 create table if not exists answers (
   contentId     text not null,
-  questionId    text primary key,
-  answer        text not null
+  questionId    text not null,
+  answer        text not null,
+
+  primary key (contentId, questionId)
 );
 `;
 
