@@ -16,12 +16,7 @@ export type PhotoContent = {
  * @returns A PhotoContent object
  */
 function transformer(row): PhotoContent {
-  const [fpath] = row;
-
-  return {
-    id: fpath,
-    fpath,
-  };
+  return row[0];
 }
 
 /*

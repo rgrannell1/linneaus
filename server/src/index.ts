@@ -19,7 +19,10 @@ import {
   getContentCount,
   getQuestions,
   setAnswer,
+  staticFiles
 } from "./routes.ts";
+
+const ROOT_DIR = `${Deno.cwd()}/static`;
 
 /*
  * Load services for Linneaues
@@ -58,11 +61,11 @@ export function linnaeusRouter<Content>(
   const router = new Router();
 
   router
-    .get(
-      '/questions',
-      oakCors(),
-      getQuestions(config, services),
-    )
+  .get(
+    '/questions',
+    oakCors(),
+    getQuestions(config, services),
+  )
     .get(
       "/questions/:questionId/contentCount",
       oakCors(),
@@ -87,7 +90,7 @@ export function linnaeusRouter<Content>(
       "/answers/:questionId/content/:index",
       oakCors(),
       setAnswer(config, services),
-    );
+    )
 
   return router;
 }
@@ -105,9 +108,10 @@ export function linnaeusApp<Content>(services: Services<Content>, config: Config
   const app = new Application();
 
   app
+    .use(staticFiles(ROOT_DIR))
     .use(oakCors())
     .use(router.routes())
-    .use(router.allowedMethods());
+    .use(router.allowedMethods())
 
   return app;
 }
@@ -130,6 +134,8 @@ export async function startApp<Content>(
     port: config.port,
     signal: config.signal,
   });
+
+  console.error(`[linnaeus] Listening on http://localhost:${config.port}`);
 
   return controller;
 }

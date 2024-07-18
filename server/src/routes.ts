@@ -3,6 +3,7 @@
  *
  */
 
+import { send } from "./deps.ts";
 
 /*
  * GET /questions
@@ -231,6 +232,8 @@ export function getContent(_, services) {
 
   return async function (ctx: any) {
     const { index } = ctx.params;
+    const qs = new URLSearchParams(ctx.request.url.search);
+
     const contentList = await Array.fromAsync(contentLoader.getContent());
 
     const content = contentList[index];
@@ -242,6 +245,26 @@ export function getContent(_, services) {
       return;
     }
 
+    if (qs.get('mode') === 'photo') {
+      ctx.response.body = content;
+    }
+
     ctx.response.body = content;
   };
+}
+
+export function staticFiles(dpath: string) {
+  return async function (ctx: any, next) {
+    const fpath = ctx.request.url.pathname;
+
+    for (const nonStatic of ['/questions', '/content', '/answers']) {
+      if (fpath.startsWith(nonStatic)) {
+        return await next();
+      }
+    }
+
+    await send(ctx, ctx.request.url.pathname, {
+      root: dpath,
+    });
+  }
 }

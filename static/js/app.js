@@ -142,7 +142,6 @@ export class LinneausApp extends LitElem {
   }
 
   renderContent() {
-    console.log( this.photoIndex );
     const url = API.photoUrl(this.photoIndex);
 
     return html`
