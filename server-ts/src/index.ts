@@ -1,7 +1,13 @@
+/*
+ * This file exports the function that starts the server locally
+ *
+ */
+
 import type {
   Config,
   IContentLoader,
   IQuestionLoader,
+  Question,
   Services,
 } from "./types/index.ts";
 import { Application, oakCors, Router } from "./deps.ts";
@@ -11,33 +17,23 @@ import {
   getAnswerCount,
   getContent,
   getContentCount,
+  getQuestions,
   setAnswer,
 } from "./routes.ts";
 
-export async function startApp (
-  app,
-  services: Services,
-  config: Config,
-) {
-  const controller = new AbortController();
-
-  app.listen({
-    port: config.port,
-    signal: config.signal,
-  });
-
-  await Promise.all([
-    services.storage.close(),
-  ]);
-
-  return controller;
-}
-
-export async function whatsThisServices<Content, Question>(
+/*
+ * Load services for Linneaues
+ *
+ * @params contentLoader - a class that implements IContentLoader
+ * @params questionsLoader - a class that implements IQuestionLoader
+ *
+ * @returns The services for Linnaeus
+ */
+export async function linnaeusServices<Content>(
   contentLoader: IContentLoader<Content>,
-  questionsLoader: IQuestionLoader<Question>,
-) {
-  const storage = new SqliteStorage();
+  questionsLoader: IQuestionLoader<Question<Content>>,
+): Promise<Services<Content>> {
+  const storage = new SqliteStorage<Content>();
   await storage.init(questionsLoader as any);
 
   return {
@@ -47,13 +43,26 @@ export async function whatsThisServices<Content, Question>(
   };
 }
 
-export function whatsThisRouter<Content, ContentMetadata>(
-  services: Services,
+/*
+ * Create the router
+ *
+ * @params services - The services for Linnaeus
+ * @params config - The configuration for Linnaeus
+ *
+ * @returns The router for Linnaeus
+ */
+export function linnaeusRouter<Content>(
+  services: Services<Content>,
   config: Config,
 ): Router {
   const router = new Router();
 
   router
+    .get(
+      '/questions',
+      oakCors(),
+      getQuestions(config, services),
+    )
     .get(
       "/questions/:questionId/contentCount",
       oakCors(),
@@ -70,7 +79,7 @@ export function whatsThisRouter<Content, ContentMetadata>(
       getAnswer(config, services),
     )
     .get(
-      "/answers/:questionId/contentCount",
+      "/answers/:questionId/count",
       oakCors(),
       getAnswerCount(config, services),
     )
@@ -83,8 +92,16 @@ export function whatsThisRouter<Content, ContentMetadata>(
   return router;
 }
 
-export function whatsThisApp(services, config) {
-  const router = whatsThisRouter(services, config);
+/*
+ * Create the application
+ *
+ * @params services - The services for Linnaeus
+ * @params config - The configuration for Linnaeus
+ *
+ * @returns The application for Linnaeus
+ */
+export function linnaeusApp<Content>(services: Services<Content>, config: Config): Application {
+  const router = linnaeusRouter(services, config);
   const app = new Application();
 
   app
@@ -93,4 +110,31 @@ export function whatsThisApp(services, config) {
     .use(router.allowedMethods());
 
   return app;
+}
+
+/*
+ * Start the application
+ *
+ * @params app - The application to start
+ * @params services - The services for Linnaeus
+ *
+ * @returns The controller for the application
+ */
+export async function startApp<Content>(
+  app: Application,
+  services: Services<Content>,
+  config: Config,
+) {
+  const controller = new AbortController();
+
+  app.listen({
+    port: config.port,
+    signal: config.signal,
+  });
+
+  await Promise.all([
+    services.storage.close(),
+  ]);
+
+  return controller;
 }

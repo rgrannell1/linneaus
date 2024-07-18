@@ -1,9 +1,31 @@
 /*
+ * API route implementations
+ *
+ */
+
+
+/*
+ * GET /questions
+ *
+ * Get questions
+ */
+export function getQuestions(_, services) {
+  const {
+    questionsLoader,
+  } = services;
+
+  return async function (ctx: any) {
+    ctx.response.body = await Array.fromAsync(questionsLoader.getQuestions());
+  }
+}
+
+/*
  * GET /content/:questionId/count
  *
  * Get the number of content items relevant to a question.
+ *
  */
-export function getContentCount(config, services) {
+export function getContentCount(_, services) {
   const {
     storage,
     contentLoader,
@@ -39,8 +61,10 @@ export function getContentCount(config, services) {
 
 /*
  * POST /answers/:questionId/content/:contentId
+ *
+ * Set the answer to a question for a specific content item
  */
-export function setAnswer(config, services) {
+export function setAnswer(_, services) {
   const {
     storage,
   } = services;
@@ -55,8 +79,10 @@ export function setAnswer(config, services) {
 
 /*
  * GET /answers/:questionId/content/:contentId
+ *
+ * Get the answer to a question for a specific content item
  */
-export function getAnswer(config, services) {
+export function getAnswer(_, services) {
   const {
     storage,
     contentLoader,
@@ -117,8 +143,10 @@ export function getAnswer(config, services) {
 
 /*
  * GET /answers/:questionId/contentCount
+ *
+ * Get the number of answers for a question
  */
-export function getAnswerCount(config, services) {
+export function getAnswerCount(_, services) {
   const {
     storage,
     contentLoader,
@@ -154,8 +182,10 @@ export function getAnswerCount(config, services) {
 
 /*
  * GET /content/:contentId
+ *
+ * Get a specific content item
  */
-export function getContent(config, services) {
+export function getContent(_, services) {
   const {
     contentLoader,
   } = services;

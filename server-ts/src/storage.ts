@@ -1,5 +1,9 @@
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+/*
+ * Storage backends implement the IDB interface
+ *
+ */
 
+import { DB } from "./deps.ts";
 import type { Answer, IDB, IQuestionLoader, Question } from "./types/index.ts";
 
 const QUESTIONS_TABLE = `
@@ -17,14 +21,18 @@ create table if not exists answers (
 );
 `;
 
-export class SqliteStorage
-  implements IDB {
+/*
+ * SQLite storage implementation
+ *
+ * @implements {IDB}
+ */
+export class SqliteStorage<Content> implements IDB<Content> {
   db: DB;
-  constructor(fpath: string = ".whatsit.db") {
+  constructor(fpath: string = ".linnaeus.db") {
     this.db = new DB(fpath);
   }
 
-  async init(questionLoader: IQuestionLoader<Question>) {
+  async init(questionLoader: IQuestionLoader<Question<Content>>) {
     await Promise.all(
       [QUESTIONS_TABLE, ANSWERS_TABLE].map((table) => this.db.query(table)),
     );
@@ -37,14 +45,30 @@ export class SqliteStorage
     }
   }
 
+  /*
+   * Get answers from the database
+   *
+   * @returns {AsyncGenerator<Answer>}
+   */
   async *getAnswers(): AsyncGenerator<Answer> {
     const query = "select * from answers";
 
-    for (const row of this.db.query(query)) {
-      yield row;
+    for (const [contentId, questionId, answer] of this.db.query(query)) {
+      yield {
+        contentId,
+        questionId,
+        answer,
+      };
     }
   }
 
+  /*
+   * Save an answer to the database
+   *
+   * @param {Answer} answer
+   *
+   * @returns {Promise<void>}
+   */
   async setAnswer(answer: Answer) {
     await this.db.query(
       "insert or replace into answers (contentId, questionId, answer) values (?, ?, ?)",
@@ -52,5 +76,12 @@ export class SqliteStorage
     );
   }
 
-  async close() {}
+  /*
+   * Close the database connection
+   *
+   * @returns {Promise<void>}
+   */
+  async close() {
+    return this.db.close();
+  }
 }

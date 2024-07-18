@@ -1,9 +1,13 @@
+/*
+ * Classes that implement the IQuestionLoader can supply questions to Linnaeus
+ *
+ */
 import type { IQuestionLoader, Question } from "./types/index.ts";
 
 /*
  * Load questions from a YAML file.
  */
-export class YamlQuestionLoader implements IQuestionLoader<Question> {
+export class YamlQuestionLoader<Content> implements IQuestionLoader<Question<Content>> {
   fpath: string;
 
   constructor(fpath: string) {
@@ -12,7 +16,7 @@ export class YamlQuestionLoader implements IQuestionLoader<Question> {
 
   async init() {}
 
-  parseQuestion(question: any): Question {
+  parseQuestion(question: any): Question<Content> {
     throw new Error("Not implemented");
   }
 
@@ -29,12 +33,12 @@ export class YamlQuestionLoader implements IQuestionLoader<Question> {
 }
 
 /*
- * Load questions from a list of questions.
+ * Re-iterate a list of questions.
  */
-export class LiteralQuestionLoader implements IQuestionLoader<Question> {
-  questions: Question[];
+export class LiteralQuestionLoader<Content> implements IQuestionLoader<Question<Content>> {
+  questions: Question<Content>[];
 
-  constructor(questions: Question[]) {
+  constructor(questions: Question<Content>[]) {
     this.questions = questions;
   }
 

@@ -1,5 +1,12 @@
-import * as Filters from "./src/filters.ts";
-import { LiteralQuestionLoader } from "./src/questions.ts";
+/*
+ * Mirror-specific questions
+ *
+ */
+
+import * as Filters from "../src/filters.ts";
+import { LiteralQuestionLoader } from "../src/load-questions.ts";
+
+import type { PhotoContent } from "./mirror.ts";
 
 const q01 = {
   id: "q01",
@@ -32,4 +39,4 @@ const q02 = {
   ],
 };
 
-export const questionLoader = new LiteralQuestionLoader([q01, q02]);
+export const questionLoader = new LiteralQuestionLoader<PhotoContent>([q01, q02]);

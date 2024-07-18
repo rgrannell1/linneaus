@@ -1,15 +1,19 @@
-import { DB } from "./src/deps.ts";
-import { SqliteContent } from "./src/content.ts";
+import { DB } from "../src/deps.ts";
+import { SqliteContent } from "../src/load-content.ts";
 
 const DB_PATH = "/home/rg/.mirror-manifest.db";
 
-type PhotoContent = {
+export type PhotoContent = {
   id: string;
   fpath: string;
 };
 
 /*
  * Convert each row to a PhotoContent object
+ *
+ * @param row - A row from the Sqlite database
+ *
+ * @returns A PhotoContent object
  */
 function transformer(row): PhotoContent {
   const [fpath] = row;
@@ -22,6 +26,10 @@ function transformer(row): PhotoContent {
 
 /*
  * Load images from the Sqlite database
+ *
+ * @param dbPath - The path to the Sqlite database
+ *
+ * @returns A class that implements IContentLoader
  */
 export class MirrorContentLoader extends SqliteContent<PhotoContent> {
   db: DB;

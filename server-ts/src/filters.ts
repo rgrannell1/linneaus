@@ -9,12 +9,15 @@
  * This file provides filters to help you select questions that contextually make sense.
  */
 
-import { Answer, Content } from "./types/index.ts";
+import { Answer } from "./types/index.ts";
 
 /*
  * Find content with a specific question answered, with the expected answer
+ *
+ * @param questionId - The question ID to filter by
+ * @param expectedAnswer - The expected answer to filter by
  */
-export function answeredQuestion(questionId: string, expectedAnswer: string) {
+export function answeredQuestion<Content>(questionId: string, expectedAnswer: string) {
   return (content: Content[], answers: Answer[]): Content[] => {
     const matchingIds: Set<string> = new Set([]);
 
@@ -34,8 +37,9 @@ export function answeredQuestion(questionId: string, expectedAnswer: string) {
 
 /*
  * Return all content
+ *
  */
-export function allContent() {
+export function allContent<Content>() {
   return (content: Content[], _: Answer[]): Content[] => {
     return content;
   };

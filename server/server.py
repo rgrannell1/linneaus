@@ -9,7 +9,7 @@ from state import State
 from typing import List
 
 
-class WhatsThisServer:
+class LinnaeusServer:
   def __init__(self, db: Database, questions: List[Question]):
     self.db = db
     self.questions = questions
@@ -30,12 +30,16 @@ class WhatsThisServer:
     self.app.run(debug=True, threaded=False)
 
   def _routes(self):
+
+
+    # done
     @self.app.route('/questions')
     def get_questions():
       return {
         "questions": [ q.__dict__ for q in questions ]
       }
 
+    # done
     @self.app.route('/photos/<question>/count')
     def photo_count(question):
       self.state.set_question_id(question)
@@ -93,5 +97,5 @@ if __name__ == '__main__':
 
   DB_PATH = '/home/rg/.mirror-manifest.db'
 
-  server = WhatsThisServer(Database(DB_PATH), questions)
+  server = LinnaeusServer(Database(DB_PATH), questions)
   server.run()

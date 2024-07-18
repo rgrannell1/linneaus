@@ -27,7 +27,7 @@ export class LitElem extends LitElement {
   }
 }
 
-export class WhatsThatApp extends LitElem {
+export class LinneausApp extends LitElem {
   static get properties() {
     return {
       imageUrl: {
@@ -313,7 +313,7 @@ export class WhatsThatApp extends LitElem {
 
     return html`
    <body>
-    <h1>What's That?</h1>
+    <h1>Linneaus</h1>
 
     ${this.renderNavigationInstructions()}
     ${this.renderContent()}
@@ -328,4 +328,4 @@ export class WhatsThatApp extends LitElem {
   }
 }
 
-customElements.define("whats-that-app", WhatsThatApp);
+customElements.define("linneaus-app", LinneausApp);

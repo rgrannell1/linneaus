@@ -1,17 +1,17 @@
 /*
  * Classes that implement the IContent interface can
- * provide content to InfoLabel
+ * provide content to Linneaus
  */
-
-import { parse as parseCsv } from "jsr:@std/csv";
-
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { parseCsv, DB } from "./deps.ts";
 import { IContentLoader } from "./types/index.ts";
 
 type RowTransformer<Content> = (row: unknown) => Content;
 
 /*
- * Read Sqlite content from a file
+ * Read Sqlite content from a file.
+ *
+ * A SQL query is provided, and a transformer function converts the retrieved rows into
+ * the desired content (with type Content)
  */
 export class SqliteContent<Content> implements IContentLoader<Content> {
   db: DB;
@@ -30,7 +30,10 @@ export class SqliteContent<Content> implements IContentLoader<Content> {
 
   async init() {}
 
-  async *getContent() {
+  /*
+   * Yield all the content from the database, after transforming it
+   */
+  async *getContent(): AsyncGenerator<Content> {
     for (const row of this.db.query(this.query)) {
       yield this.transformer(row);
     }
@@ -43,6 +46,11 @@ export class SqliteContent<Content> implements IContentLoader<Content> {
 
 /*
  * Read CSV content from a file
+ *
+ * A transformer function converts the retrieved rows into
+ * the desired content (with type Content)
+ *
+ * Headers can be skipped
  */
 export class CSVContent<Content> implements IContentLoader<Content> {
   fpath: string;
@@ -76,7 +84,10 @@ export class CSVContent<Content> implements IContentLoader<Content> {
 }
 
 /*
- * Read JSON content from a file.
+ * Read JSON content from a file. The JSON file must contain an array
+ *
+ * A transformer function converts the retrieved rows into
+ * the desired content (with type Content)
  */
 export class JSONContent<Content> implements IContentLoader<Content> {
   fpath: string;
