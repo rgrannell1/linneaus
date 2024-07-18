@@ -69,12 +69,12 @@ export function linnaeusRouter<Content>(
       getContentCount(config, services),
     )
     .get(
-      "/content/:contentId",
+      "/content/:index",
       oakCors(),
       getContent(config, services),
     )
     .get(
-      "/answers/:questionId/content/:contentId",
+      "/answers/:questionId/content/:index",
       oakCors(),
       getAnswer(config, services),
     )
@@ -84,7 +84,7 @@ export function linnaeusRouter<Content>(
       getAnswerCount(config, services),
     )
     .post(
-      "/answers/:questionId/content/:contentId",
+      "/answers/:questionId/content/:index",
       oakCors(),
       setAnswer(config, services),
     );
@@ -122,7 +122,6 @@ export function linnaeusApp<Content>(services: Services<Content>, config: Config
  */
 export async function startApp<Content>(
   app: Application,
-  services: Services<Content>,
   config: Config,
 ) {
   const controller = new AbortController();
@@ -131,10 +130,6 @@ export async function startApp<Content>(
     port: config.port,
     signal: config.signal,
   });
-
-  await Promise.all([
-    services.storage.close(),
-  ]);
 
   return controller;
 }

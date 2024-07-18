@@ -51,9 +51,7 @@ export class SqliteStorage<Content> implements IDB<Content> {
    * @returns {AsyncGenerator<Answer>}
    */
   async *getAnswers(): AsyncGenerator<Answer> {
-    const query = "select * from answers";
-
-    for (const [contentId, questionId, answer] of this.db.query(query)) {
+    for (const [contentId, questionId, answer] of this.db.query("select * from answers")) {
       yield {
         contentId,
         questionId,

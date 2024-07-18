@@ -60,29 +60,11 @@ export function getContentCount(_, services) {
 }
 
 /*
- * POST /answers/:questionId/content/:contentId
+ * POST /answers/:questionId/content/:index
  *
  * Set the answer to a question for a specific content item
  */
 export function setAnswer(_, services) {
-  const {
-    storage,
-  } = services;
-
-  return async function (ctx: any) {
-    const { questionId, contentId } = ctx.params;
-    const { answer } = ctx.request.body;
-
-    await storage.setAnswer({ questionId, contentId, answer });
-  };
-}
-
-/*
- * GET /answers/:questionId/content/:contentId
- *
- * Get the answer to a question for a specific content item
- */
-export function getAnswer(_, services) {
   const {
     storage,
     contentLoader,
@@ -90,7 +72,8 @@ export function getAnswer(_, services) {
   } = services;
 
   return async function (ctx: any) {
-    const { questionId, contentId } = ctx.params;
+    const { questionId, index } = ctx.params;
+    const { answer } = ctx.request.body;
 
     const [
       content,
@@ -111,30 +94,87 @@ export function getAnswer(_, services) {
       return;
     }
 
-    const contentItem = content.find((content) => content.id === contentId);
-    if (!contentItem) {
+    const eligableContent = question.relevantContent(content, answers);
+    const selectedContent = eligableContent[index];
+    if (!selectedContent) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
-        error: `No content with ID ${contentId} found`,
+        error: `No content found at index ${index}`,
+      });
+      return;
+    }
+
+    const contentId = selectedContent.id;
+    if (!contentId) {
+      ctx.response.status = 400;
+      ctx.response.body = JSON.stringify({
+        error: "Content must have an id property",
+      });
+      return;
+    }
+
+    await storage.setAnswer({ questionId, contentId, answer });
+  };
+}
+
+/*
+ * GET /answers/:questionId/content/:contentId
+ *
+ * Get the answer to a question for a specific content item
+ */
+export function getAnswer(_, services) {
+  const {
+    storage,
+    contentLoader,
+    questionsLoader,
+  } = services;
+
+  return async function (ctx: any) {
+    const { questionId, index } = ctx.params;
+
+    const [
+      content,
+      questions,
+      answers,
+    ] = await Promise.all([
+      Array.fromAsync(contentLoader.getContent()),
+      Array.fromAsync(questionsLoader.getQuestions()),
+      Array.fromAsync(storage.getAnswers(questionId)),
+    ]);
+
+    const question = questions.find((question) => question.id === questionId);
+    if (!question) {
+      ctx.response.status = 404;
+      ctx.response.body = JSON.stringify({
+        error: `No question with ID ${questionId} found`,
+      });
+      return;
+    }
+
+    const selectedContent = content[index];
+    if (!selectedContent) {
+      ctx.response.status = 404;
+      ctx.response.body = JSON.stringify({
+        error: `No content at index ${index} found`,
       });
       return;
     }
 
     const answer = answers.find((answer) => {
-      return answer.contentId === contentId && answer.questionId === questionId;
+      return answer.contentId === selectedContent.id && answer.questionId === questionId;
     });
 
     if (!answer) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
         error:
-          `No answer found for question ${questionId} and content ${contentId}`,
+          `No answer found for question ${questionId} and content ${selectedContent.id}`,
       });
       return;
     }
 
     ctx.response.body = JSON.stringify({
-      contentId,
+      contentId: selectedContent.id,
       questionId,
       answer: answer.answer,
     });
@@ -149,7 +189,6 @@ export function getAnswer(_, services) {
 export function getAnswerCount(_, services) {
   const {
     storage,
-    contentLoader,
     questionsLoader,
   } = services;
 
@@ -191,14 +230,14 @@ export function getContent(_, services) {
   } = services;
 
   return async function (ctx: any) {
-    const { contentId } = ctx.params;
+    const { index } = ctx.params;
     const contentList = await Array.fromAsync(contentLoader.getContent());
 
-    const content = contentList.find((content) => content.id === contentId);
+    const content = contentList[index];
     if (!content) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
-        error: `No content with ID ${contentId} found`,
+        error: `No content with ID ${index} found`,
       });
       return;
     }

@@ -18,4 +18,4 @@ const config = {
 };
 
 const app = linnaeusApp(services, config);
-await startApp(app, services, config);
+await startApp(app, config);

@@ -84,22 +84,27 @@ export class LinneausApp extends LitElem {
     this.loadQuestions()
       .then(() => this.loadPhotoCount())
       .then(() => this.loadAnsweredCount())
-      .then(() => this.loadFileInfo());
   }
 
   async loadQuestions() {
-    const { questions } = await this.api.getQuestions();
-    this.questions = questions;
+    this.questions = await this.api.getQuestions();
   }
 
   async loadPhotoCount() {
+    if (!this.questions) {
+      return html``;
+    }
+
     const question = this.questions[this.questionIndex];
-    this.photoCount = await this.api.photoCount(question.question_id);
+    this.photoCount = await this.api.photoCount(question.id);
   }
 
   async loadAnsweredCount() {
+    if (!this.questions) {
+      return html``
+    }
     const question = this.questions[this.questionIndex];
-    const { count } = await this.api.getAnswerCount(question.question_id);
+    const { count } = await this.api.getAnswerCount(question.id);
     this.questionsAnswered = count;
   }
 
@@ -107,7 +112,7 @@ export class LinneausApp extends LitElem {
     const question = this.questions[this.questionIndex];
     const answer = await this.api.getAnswer(
       this.photoIndex,
-      question.question_id,
+      question.id,
     );
 
     if (answer) {
@@ -115,18 +120,12 @@ export class LinneausApp extends LitElem {
     }
   }
 
-  async loadFileInfo() {
-    const name = await this.api.info(this.photoIndex);
-
-    this.imagePath = name;
-  }
-
   async saveAnswer(option) {
     const question = this.questions[this.questionIndex];
 
     return this.api.saveAnswer(
       this.photoIndex,
-      question.question_id,
+      question.id,
       option,
       question.choices[option - 1],
     );
@@ -140,6 +139,7 @@ export class LinneausApp extends LitElem {
   }
 
   renderContent() {
+    console.log( this.photoIndex );
     const url = API.photoUrl(this.photoIndex);
 
     return html`
@@ -155,14 +155,14 @@ export class LinneausApp extends LitElem {
 
     this.loadPhotoCount().then(() => {
       if (this.photoIndex > this.photoCount - 1) {
-        this.photoIndex = this.photoCount - 1;
+        this.photoIndex = Math.max(0, this.photoCount - 1);
       }
     });
     this.loadAnsweredCount();
     this.loadAnswer();
 
     if (this.photoIndex > this.photoCount - 1) {
-      this.photoIndex = this.photoCount - 1;
+      this.photoIndex = Math.max(0, this.photoCount - 1);
     }
   }
 
@@ -174,7 +174,7 @@ export class LinneausApp extends LitElem {
 
     this.loadPhotoCount().then(() => {
       if (this.photoIndex > this.photoCount - 1) {
-        this.photoIndex = this.photoCount - 1;
+        this.photoIndex = Math.max(0, this.photoCount - 1);
       }
     });
 
@@ -186,10 +186,9 @@ export class LinneausApp extends LitElem {
     this.photoIndex--;
 
     if (this.photoIndex < 0) {
-      this.photoIndex = this.photoCount - 1;
+      this.photoIndex = Math.max(0, this.photoCount - 1);
     }
 
-    this.loadFileInfo();
     this.loadAnswer();
   }
 
@@ -200,7 +199,6 @@ export class LinneausApp extends LitElem {
       this.photoIndex = 0;
     }
 
-    this.loadFileInfo();
     this.loadAnswer();
   }
 
@@ -270,6 +268,9 @@ export class LinneausApp extends LitElem {
   }
 
   renderQuestion() {
+    if (!this.questions) {
+      return html``;
+    }
     const question = this.questions[this.questionIndex];
 
     if (!question) {
@@ -277,19 +278,18 @@ export class LinneausApp extends LitElem {
     }
     return html`
     <div>
-    <h2>[${question.question_id}] ${question.question}</h2>
+    <h2>[${question.id}] ${question.text}</h2>
 
     </div>
     `;
   }
 
   renderInput() {
-    const question = this.questions[this.questionIndex];
-
-    if (!question) {
+    if (!this.questions || this.questions.length === 0) {
       return html``;
     }
 
+    const question = this.questions[this.questionIndex];
     const choices = question.choices ?? [];
 
     return html`

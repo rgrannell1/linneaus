@@ -1,34 +1,34 @@
 const ENDPOINT = `http://localhost:5000`;
 
 export class API {
-  static photoUrl(id) {
-    return `${ENDPOINT}/photos/${id}#time=${Date.now()}`;
+  static photoUrl(index) {
+    return `${ENDPOINT}/content/${index}#time=${Date.now()}`;
   }
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);
     return res.json();
   }
-  /*
-   * Get information about a photo
-   */
-  async info(idx) {
-    const res = await fetch(`${ENDPOINT}/photos/${idx}/info`);
-    return res.text();
-  }
+
   async photoCount(question) {
-    const res = await fetch(`${ENDPOINT}/photos/${question}/count`);
-    return res.text();
+    const res = await fetch(`${ENDPOINT}/questions/${question}/contentCount`);
+    const { count } = res.json();
+
+    return count;
   }
   async getAnswerCount(question) {
-    const res = await fetch(`${ENDPOINT}/photos/${question}/answer_count`);
+    const res = await fetch(`${ENDPOINT}/answers/${question}/count`);
     return res.json();
   }
   async getAnswer(idx, question) {
-    const res = await fetch(`${ENDPOINT}/photos/${idx}/${question}/answer`);
-    return res.json();
+    try {
+      const res = await fetch(`${ENDPOINT}/answers/${question}/content/${idx}`);
+      return res.json();
+    } catch (err) {
+      return;
+    }
   }
   async saveAnswer(idx, question, option, choice) {
-    await fetch(`${ENDPOINT}/photos/${idx}/${question}/answer`, {
+    await fetch(`${ENDPOINT}/answers/${question}/content/${idx}`, {
       method: "POST",
       body: JSON.stringify({
         question,
