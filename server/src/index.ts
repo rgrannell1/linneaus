@@ -67,7 +67,7 @@ export function linnaeusRouter<Content>(
     getQuestions(config, services),
   )
     .get(
-      "/questions/:questionId/contentCount",
+      "/questions/:questionId/count",
       oakCors(),
       getContentCount(config, services),
     )
@@ -116,6 +116,37 @@ export function linnaeusApp<Content>(services: Services<Content>, config: Config
   return app;
 }
 
+class Ansi {
+  static bold(text: string) {
+    return `\u001B[1m${text}\u001B[0m`;
+  }
+  static link(text: string, url: string) {
+    return `\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`;
+  }
+  static green(text: string) {
+    return `\u001B[32m${text}\u001B[0m`
+  }
+}
+
+const splashScreen = (config: Config) => `
+🍃 \u001B]8;;http://localhost:${config.port}/index.html\u0007Linnaeus\u001B]8;;\u0007 🍃
+
+~~ API ~~
+
+GET ${Ansi.bold('/questions')}
+  ${Ansi.green('List all questions')}
+GET ${Ansi.bold('/questions/:questionId/count')}
+  ${Ansi.green('Get the number of content items eligable for a particular question')}
+GET ${Ansi.bold('/content/:index')}
+  ${Ansi.green('Get a particular content item')}
+GET ${Ansi.bold('/answers/:questionId/content/:index')}
+  ${Ansi.green('Get a answer for particular content and question')}
+GET ${Ansi.bold('/answers/:questionId/count')}
+  ${Ansi.green('Get the number of answers for a particular question')}
+POST ${Ansi.bold('/answers/:questionId/content/:index')}
+  ${Ansi.green('Set an answer for a particular content and question')}
+`
+
 /*
  * Start the application
  *
@@ -135,7 +166,7 @@ export async function startApp<Content>(
     signal: config.signal,
   });
 
-  console.error(`[linnaeus] Listening on http://localhost:${config.port}`);
+  console.error(splashScreen(config));
 
   return controller;
 }
