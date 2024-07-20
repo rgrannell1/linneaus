@@ -236,9 +236,8 @@ export function getContent(_, services) {
     const qs = new URLSearchParams(ctx.request.url.search);
 
     const contentList = await Array.fromAsync(contentLoader.getContent());
-
-    const content = contentList[index];
-    if (!content) {
+    const selectedContent = contentList[index];
+    if (!selectedContent) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
         error: `No content with ID ${index} found`,
@@ -247,10 +246,13 @@ export function getContent(_, services) {
     }
 
     if (qs.get('mode') === 'photo') {
-      ctx.response.body = content;
+      await ctx.send({
+        root: '/',
+        path: selectedContent,
+      })
+    } else {
+      ctx.response.body = selectedContent;
     }
-
-    ctx.response.body = content;
   };
 }
 

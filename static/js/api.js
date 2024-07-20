@@ -2,7 +2,7 @@ const ENDPOINT = `http://localhost:5000`;
 
 export class API {
   static photoUrl(index) {
-    return `${ENDPOINT}/content/${index}#time=${Date.now()}&mode=photo`;
+    return `${ENDPOINT}/content/${index}?mode=photo#time=${Date.now()}`;
   }
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);
