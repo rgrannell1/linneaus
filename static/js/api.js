@@ -11,8 +11,7 @@ export class API {
 
   async contentCount(question) {
     const res = await fetch(`${ENDPOINT}/questions/${question}/count`);
-    const { count }  = await res.json();
-
+    const { count } = await res.json();
 
     return count;
   }

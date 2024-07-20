@@ -1,13 +1,12 @@
 /*
  * This file loads external dependencies
- *
  */
 
 export {
   Application,
   Context,
   Router,
-  send
+  send,
 } from "https://deno.land/x/oak@v12.6.2/mod.ts";
 
 export { DB } from "https://deno.land/x/sqlite/mod.ts";

@@ -1,6 +1,5 @@
 /*
  * Storage backends implement the IDB interface
- *
  */
 
 import { DB } from "./deps.ts";
@@ -53,7 +52,11 @@ export class SqliteStorage<Content> implements IDB<Content> {
    * @returns {AsyncGenerator<Answer>}
    */
   async *getAnswers(): AsyncGenerator<Answer> {
-    for (const [contentId, questionId, answer] of this.db.query("select * from answers")) {
+    for (
+      const [contentId, questionId, answer] of this.db.query(
+        "select * from answers",
+      )
+    ) {
       yield {
         contentId,
         questionId,

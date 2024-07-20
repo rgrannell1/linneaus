@@ -1,6 +1,5 @@
 /*
  * Mirror-specific questions
- *
  */
 
 import * as Filters from "../src/filters.ts";
@@ -51,7 +50,6 @@ const q03 = {
     "Other",
   ],
 };
-
 
 const q03_05 = {
   id: "q03_05",
@@ -134,7 +132,7 @@ const q08 = {
     "Pond",
     "Puddle",
     "Other",
-    "Unsure"
+    "Unsure",
   ],
 };
 
@@ -152,7 +150,7 @@ const q09 = {
     "Public Life",
     "General Ambiance",
     "Other",
-    "Unsure"
+    "Unsure",
   ],
 };
 
@@ -168,7 +166,7 @@ const q10 = {
     "Pond",
     "Puddle",
     "Other",
-    "Unsure"
+    "Unsure",
   ],
 };
 
@@ -183,5 +181,5 @@ export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q07,
   q08,
   q09,
-  q10
+  q10,
 ]);

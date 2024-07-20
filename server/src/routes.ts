@@ -1,6 +1,5 @@
 /*
  * API route implementations
- *
  */
 
 import { send } from "./deps.ts";
@@ -18,14 +17,13 @@ export function getQuestions(_, services) {
 
   return async function (ctx: any) {
     ctx.response.body = await Array.fromAsync(questionsLoader.getQuestions());
-  }
+  };
 }
 
 /*
  * GET /content/:questionId/count
  *
  * Get the number of content items relevant to a question.
- *
  */
 export function getContentCount(_, services) {
   const {
@@ -163,14 +161,15 @@ export function getAnswer(_, services) {
     }
 
     const answer = answers.find((answer: Answer) => {
-      return answer.contentId === selectedContent && answer.questionId === questionId;
+      return answer.contentId === selectedContent &&
+        answer.questionId === questionId;
     });
 
     if (!answer) {
-      ctx.response.status = 404;
+      ctx.response.status = 200;
       ctx.response.body = JSON.stringify({
         error:
-          `No answer found for question ${questionId} and content ${selectedContent.id}`,
+          `No answer found for question ${questionId} and content ${selectedContent}`,
       });
       return;
     }
@@ -245,11 +244,11 @@ export function getContent(_, services) {
       return;
     }
 
-    if (qs.get('mode') === 'photo') {
+    if (qs.get("mode") === "photo") {
       await ctx.send({
-        root: '/',
+        root: "/",
         path: selectedContent,
-      })
+      });
     } else {
       ctx.response.body = selectedContent;
     }
@@ -260,7 +259,7 @@ export function staticFiles(dpath: string) {
   return async function (ctx: any, next) {
     const fpath = ctx.request.url.pathname;
 
-    for (const nonStatic of ['/questions', '/content', '/answers']) {
+    for (const nonStatic of ["/questions", "/content", "/answers"]) {
       if (fpath.startsWith(nonStatic)) {
         return await next();
       }
@@ -269,5 +268,5 @@ export function staticFiles(dpath: string) {
     await send(ctx, ctx.request.url.pathname, {
       root: dpath,
     });
-  }
+  };
 }

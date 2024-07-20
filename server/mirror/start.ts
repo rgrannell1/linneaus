@@ -1,9 +1,8 @@
 /*
  * Mirror-specific content
- *
  */
 
-import { startApp, linnaeusApp, linnaeusServices } from "../src/index.ts";
+import { linnaeusApp, linnaeusServices, startApp } from "../src/index.ts";
 import { questionLoader } from "./questions.ts";
 import { MirrorContentLoader } from "./mirror.ts";
 import type { PhotoContent } from "./mirror.ts";

@@ -1,6 +1,5 @@
 /*
  * This file defines types used within Linneaus
- *
  */
 export type Config = {
   port: number;
@@ -21,17 +20,16 @@ export type ContentFilter<Content> = (
 export type PickOneQuestion<Content> = {
   id: string;
   type: string;
-  relevantContent: ContentFilter<Content>,
+  relevantContent: ContentFilter<Content>;
   text: string;
   choices: string[];
-}
+};
 
 // supported question types
 export type Question<Content> = PickOneQuestion<Content>;
 
 /*
  * +++ +++ +++ Interfaces +++ +++ +++
- *
  */
 export interface IInit<Content> {
   init(questionLoader: IQuestionLoader<Question<Content>>): Promise<void>;
@@ -52,7 +50,6 @@ export interface ISetAnswer {
 /*
  * This is the interface required by the Linnaeus
  * server
- *
  */
 export type IDB<Content> =
   & IInit<Content>
@@ -69,7 +66,6 @@ export type Services<Content> = {
 /*
  * Implementations of this interface can supply content
  * to Linnaeus
- *
  */
 export interface IContentLoader<Content> {
   init(): Promise<void>;
@@ -80,7 +76,6 @@ export interface IContentLoader<Content> {
 /*
  * Implementations of this interface can supply questions
  * to Linnaeus
- *
  */
 export interface IQuestionLoader<Question> {
   init(): Promise<void>;

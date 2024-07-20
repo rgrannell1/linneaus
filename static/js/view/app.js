@@ -1,4 +1,3 @@
-
 import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
 import { API } from "/js/api.js";
@@ -73,7 +72,7 @@ export class LinneausApp extends LitElem {
 
     this.loadQuestions()
       .then(() => this.loadContentCount())
-      .then(() => this.loadAnsweredCount())
+      .then(() => this.loadAnsweredCount());
   }
 
   async loadQuestions() {
@@ -91,7 +90,7 @@ export class LinneausApp extends LitElem {
 
   async loadAnsweredCount() {
     if (!this.questions) {
-      return html``
+      return html``;
     }
     const question = this.questions[this.questionIndex];
     const { count } = await this.api.getAnswerCount(question.id);
@@ -122,14 +121,6 @@ export class LinneausApp extends LitElem {
       option,
       question.choices[option - 1],
     );
-  }
-
-  renderContent() {
-    const url = API.photoUrl(this.photoIndex);
-
-    return html`
-    <image width="600" id="preview-image" src="${url}"></image>
-    `;
   }
 
   onDown() {

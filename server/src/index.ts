@@ -1,6 +1,5 @@
 /*
  * This file exports the function that starts the server locally
- *
  */
 
 import type {
@@ -19,7 +18,7 @@ import {
   getContentCount,
   getQuestions,
   setAnswer,
-  staticFiles
+  staticFiles,
 } from "./routes.ts";
 
 const ROOT_DIR = `${Deno.cwd()}/static`;
@@ -61,11 +60,11 @@ export function linnaeusRouter<Content>(
   const router = new Router();
 
   router
-  .get(
-    '/questions',
-    oakCors(),
-    getQuestions(config, services),
-  )
+    .get(
+      "/questions",
+      oakCors(),
+      getQuestions(config, services),
+    )
     .get(
       "/questions/:questionId/count",
       oakCors(),
@@ -90,7 +89,7 @@ export function linnaeusRouter<Content>(
       "/answers/:questionId/content/:index",
       oakCors(),
       setAnswer(config, services),
-    )
+    );
 
   return router;
 }
@@ -103,7 +102,10 @@ export function linnaeusRouter<Content>(
  *
  * @returns The application for Linnaeus
  */
-export function linnaeusApp<Content>(services: Services<Content>, config: Config): Application {
+export function linnaeusApp<Content>(
+  services: Services<Content>,
+  config: Config,
+): Application {
   const router = linnaeusRouter(services, config);
   const app = new Application();
 
@@ -111,7 +113,7 @@ export function linnaeusApp<Content>(services: Services<Content>, config: Config
     .use(staticFiles(ROOT_DIR))
     .use(oakCors())
     .use(router.routes())
-    .use(router.allowedMethods())
+    .use(router.allowedMethods());
 
   return app;
 }
@@ -124,7 +126,7 @@ class Ansi {
     return `\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`;
   }
   static green(text: string) {
-    return `\u001B[32m${text}\u001B[0m`
+    return `\u001B[32m${text}\u001B[0m`;
   }
 }
 
@@ -133,19 +135,23 @@ const splashScreen = (config: Config) => `
 
 ~~ API ~~
 
-GET ${Ansi.bold('/questions')}
-  ${Ansi.green('List all questions')}
-GET ${Ansi.bold('/questions/:questionId/count')}
-  ${Ansi.green('Get the number of content items eligable for a particular question')}
-GET ${Ansi.bold('/content/:index')}
-  ${Ansi.green('Get a particular content item')}
-GET ${Ansi.bold('/answers/:questionId/content/:index')}
-  ${Ansi.green('Get a answer for particular content and question')}
-GET ${Ansi.bold('/answers/:questionId/count')}
-  ${Ansi.green('Get the number of answers for a particular question')}
-POST ${Ansi.bold('/answers/:questionId/content/:index')}
-  ${Ansi.green('Set an answer for a particular content and question')}
-`
+GET ${Ansi.bold("/questions")}
+  ${Ansi.green("List all questions")}
+GET ${Ansi.bold("/questions/:questionId/count")}
+  ${
+  Ansi.green(
+    "Get the number of content items eligable for a particular question",
+  )
+}
+GET ${Ansi.bold("/content/:index")}
+  ${Ansi.green("Get a particular content item")}
+GET ${Ansi.bold("/answers/:questionId/content/:index")}
+  ${Ansi.green("Get a answer for particular content and question")}
+GET ${Ansi.bold("/answers/:questionId/count")}
+  ${Ansi.green("Get the number of answers for a particular question")}
+POST ${Ansi.bold("/answers/:questionId/content/:index")}
+  ${Ansi.green("Set an answer for a particular content and question")}
+`;
 
 /*
  * Start the application

@@ -2,7 +2,7 @@
  * Classes that implement the IContent interface can
  * provide content to Linneaus
  */
-import { parseCsv, DB } from "./deps.ts";
+import { DB, parseCsv } from "./deps.ts";
 import { IContentLoader } from "./types/index.ts";
 
 type RowTransformer<Content> = (row: unknown) => Content;

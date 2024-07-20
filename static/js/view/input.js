@@ -1,4 +1,3 @@
-
 import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
 
@@ -25,7 +24,7 @@ class LinnaeusInput extends LitElem {
       return html`<p>Loading...</p>`;
     }
 
-    const index = typeof this.questionIndex === 'undefined'
+    const index = typeof this.questionIndex === "undefined"
       ? 0
       : this.questionIndex;
 

@@ -17,7 +17,10 @@ import { Answer } from "./types/index.ts";
  * @param questionId - The question ID to filter by
  * @param expectedAnswer - The expected answer to filter by
  */
-export function answeredQuestion<Content>(questionId: string, expectedAnswer: string) {
+export function answeredQuestion<Content>(
+  questionId: string,
+  expectedAnswer: string,
+) {
   return (content: Content[], answers: Answer[]): Content[] => {
     const matchingIds: Set<string> = new Set([]);
 
@@ -37,7 +40,6 @@ export function answeredQuestion<Content>(questionId: string, expectedAnswer: st
 
 /*
  * Return all content
- *
  */
 export function allContent<Content>() {
   return (content: Content[], _: Answer[]): Content[] => {

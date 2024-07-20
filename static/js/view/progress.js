@@ -1,4 +1,3 @@
-
 import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
 
@@ -21,6 +20,10 @@ export class LinnaeusPhotoProgress extends LitElem {
   }
 
   render() {
+    if (this.photoCount === 0) {
+      return html`<p>no eligable content for this question</p>`;
+    }
+
     const percentage = Math.round(this.questionsAnswered / this.photoCount) *
       100;
     const answeredPercentage = `${percentage}` === "100"
