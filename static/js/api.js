@@ -10,7 +10,7 @@ export class API {
   }
 
   async contentCount(question) {
-    const res = await fetch(`${ENDPOINT}/questions/${question}/contentCount`);
+    const res = await fetch(`${ENDPOINT}/questions/${question}/count`);
     const { count }  = await res.json();
 
 

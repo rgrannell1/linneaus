@@ -4,6 +4,7 @@
  */
 
 import { send } from "./deps.ts";
+import { Answer } from "./types/index.ts";
 
 /*
  * GET /questions
@@ -141,7 +142,7 @@ export function getAnswer(_, services) {
       Array.fromAsync(contentLoader.getContent()),
       Array.fromAsync(questionsLoader.getQuestions()),
       Array.fromAsync(storage.getAnswers(questionId)),
-    ]);
+    ]) as [unknown[], unknown[], Answer[]];
 
     const question = questions.find((question) => question.id === questionId);
     if (!question) {
@@ -161,8 +162,8 @@ export function getAnswer(_, services) {
       return;
     }
 
-    const answer = answers.find((answer) => {
-      return answer.contentId === selectedContent.id && answer.questionId === questionId;
+    const answer = answers.find((answer: Answer) => {
+      return answer.contentId === selectedContent && answer.questionId === questionId;
     });
 
     if (!answer) {
@@ -175,7 +176,7 @@ export function getAnswer(_, services) {
     }
 
     ctx.response.body = JSON.stringify({
-      contentId: selectedContent.id,
+      contentId: selectedContent,
       questionId,
       answer: answer.answer,
     });
