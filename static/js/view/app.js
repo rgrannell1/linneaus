@@ -1,6 +1,14 @@
-import { html, LitElement } from "/js/library/lit.js";
+
+import { LitElem } from "/js/library/litelem.js";
+import { html } from "/js/library/lit.js";
 import { API } from "/js/api.js";
 import { Keys } from "/js/constants.js";
+
+import "/js/view/content.js";
+import "/js/view/input.js";
+import "/js/view/navigation-guide.js";
+import "/js/view/progress.js";
+import "/js/view/question.js";
 
 const BACKGROUNDS = [
   "#7ED7C1",
@@ -8,24 +16,6 @@ const BACKGROUNDS = [
   "#D77E94",
   "#C1D77E",
 ];
-
-export class LitElem extends LitElement {
-  createRenderRoot() {
-    return this;
-  }
-
-  broadcast(label, detail) {
-    return () => {
-      const dispatched = new CustomEvent(label, {
-        detail,
-        bubbles: true,
-        composed: true,
-      });
-
-      this.dispatchEvent(dispatched);
-    };
-  }
-}
 
 export class LinneausApp extends LitElem {
   static get properties() {
@@ -134,13 +124,6 @@ export class LinneausApp extends LitElem {
     );
   }
 
-  renderNavigationInstructions() {
-    return html`
-      <p class="navigation-guide">Navigate between photos with ←, →</p>
-      <p class="navigation-guide">Navigate between questions with ↑, ↓</p>
-    `;
-  }
-
   renderContent() {
     const url = API.photoUrl(this.photoIndex);
 
@@ -149,7 +132,7 @@ export class LinneausApp extends LitElem {
     `;
   }
 
-  onUp() {
+  onDown() {
     this.questionIndex--;
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
@@ -168,7 +151,7 @@ export class LinneausApp extends LitElem {
     }
   }
 
-  onDown() {
+  onUp() {
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
@@ -248,63 +231,8 @@ export class LinneausApp extends LitElem {
     }
   }
 
-  renderPhotoProgress() {
-    const percentage = Math.round(this.questionsAnswered / this.photoCount) *
-      100;
-    const answeredPercentage = `${percentage}` === "100"
-      ? "100% 🎉"
-      : percentage;
-
-    return html`
-    <p>
-      photo <span id="photo-index">${
-      this.photoIndex + 1
-    }</span> of <span id="photo-count">${this.photoCount}</span> |
-      <span id="photo-answered-count">${this.questionsAnswered}</span> answered (<span id="photo-answered-percentage">${answeredPercentage}</span>)
-    </p>
-    `;
-  }
-
   renderFileInfo() {
     return html`<p id="photo-path">${this.imagePath}</p>`;
-  }
-
-  renderQuestion() {
-    if (!this.questions) {
-      return html``;
-    }
-    const question = this.questions[this.questionIndex];
-
-    if (!question) {
-      return html``;
-    }
-    return html`
-    <div>
-    <h2>[${question.id}] ${question.text}</h2>
-
-    </div>
-    `;
-  }
-
-  renderInput() {
-    if (!this.questions || this.questions.length === 0) {
-      return html``;
-    }
-
-    const question = this.questions[this.questionIndex];
-    const choices = question.choices ?? [];
-
-    return html`
-      <ul class="answers-list">
-        ${
-      choices.map((choice, idx) => {
-        const classes = this.selectedOption === idx + 1 ? "selected" : "";
-
-        return html`<li class="${classes}">[${idx + 1}] ${choice}</li>`;
-      })
-    }
-      </ul>
-    `;
   }
 
   render() {
@@ -317,14 +245,29 @@ export class LinneausApp extends LitElem {
    <body>
     <h1>Linneaus</h1>
 
-    ${this.renderNavigationInstructions()}
-    ${this.renderContent()}
-    ${this.renderPhotoProgress()}
+    <linneaus-navigation-guide></linneaus-navigation-guide>
+    <linneaus-content
+      .photoIndex=${this.photoIndex}></linneaus-content>
+
+    <linneaus-photo-progress
+      .photoIndex=${this.photoIndex}
+      .photoCount=${this.photoCount}
+      .questionsAnswered=${this.questionsAnswered}
+      ></linneaus-photo-progress>
 
     ${this.renderFileInfo()}
 
-    ${this.renderQuestion()}
-    ${this.renderInput()}
+    <linneaus-question
+      .questions=${this.questions}
+      .questionIndex=${this.questionIndex}>
+    </linneaus-question>
+
+    <linneaus-input
+      .questions=${this.questions}
+      .questionIndex=${this.questionIndex}
+      .selectedOption=${this.selectedOption}>
+    </linneaus-input>
+
    </body>
     `;
   }
