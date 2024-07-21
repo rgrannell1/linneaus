@@ -238,6 +238,8 @@ export class LinneausApp extends LitElem {
 
     <linneaus-navigation-guide></linneaus-navigation-guide>
     <linneaus-content
+      .questions=${this.questions}
+      .questionIndex=${this.questionIndex}
       .photoIndex=${this.photoIndex}></linneaus-content>
 
     <linneaus-photo-progress

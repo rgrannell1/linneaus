@@ -21,6 +21,7 @@ import {
   setAnswer,
   staticFiles,
 } from "./routes.ts";
+import { Ansi } from "./ansi.ts";
 
 const ROOT_DIR = `${Deno.cwd()}/static`;
 
@@ -72,7 +73,7 @@ export function linnaeusRouter<Content>(
       getContentCount(config, services),
     )
     .get(
-      "/content/:index",
+      "/questions/:questionId/content/:index",
       oakCors(),
       getContent(config, services),
     )
@@ -118,18 +119,6 @@ export function linnaeusApp<Content>(
     .use(router.allowedMethods());
 
   return app;
-}
-
-class Ansi {
-  static bold(text: string) {
-    return `\u001B[1m${text}\u001B[0m`;
-  }
-  static link(text: string, url: string) {
-    return `\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`;
-  }
-  static green(text: string) {
-    return `\u001B[32m${text}\u001B[0m`;
-  }
 }
 
 const splashScreen = (config: Config) => `

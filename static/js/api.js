@@ -1,8 +1,8 @@
 const ENDPOINT = `http://localhost:5000`;
 
 export class API {
-  static photoUrl(index) {
-    return `${ENDPOINT}/content/${index}?mode=photo#time=${Date.now()}`;
+  static photoUrl(questionIndex, index) {
+    return `${ENDPOINT}/questions/${questionIndex}/content/${index}?mode=photo#time=${Date.now()}`;
   }
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);

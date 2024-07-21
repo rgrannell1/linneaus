@@ -2,12 +2,13 @@
  * API route implementations
  */
 
+import { Ansi } from "./ansi.ts";
 import { send } from "./deps.ts";
 import { Answer } from "./types/index.ts";
 
 export function logRoute() {
   return async function (ctx: any, next: any) {
-    console.log(`${ctx.request.method} ${ctx.request.url.pathname}`);
+    console.log(`${ctx.request.method} ${Ansi.bold(ctx.request.url.pathname)}`);
     await next();
   }
 }
@@ -236,13 +237,34 @@ export function getAnswerCount(_, services) {
 export function getContent(_, services) {
   const {
     contentLoader,
+    storage,
+    questionsLoader
   } = services;
 
   return async function (ctx: any) {
-    const { index } = ctx.params;
+    const { questionId, index } = ctx.params;
     const qs = new URLSearchParams(ctx.request.url.search);
 
-    const contentList = await Array.fromAsync(contentLoader.getContent());
+    const [
+      content,
+      questions,
+      answers,
+    ] = await Promise.all([
+      Array.fromAsync(contentLoader.getContent()),
+      Array.fromAsync(questionsLoader.getQuestions()),
+      Array.fromAsync(storage.getAnswers(questionId)),
+    ]) as [unknown[], unknown[], Answer[]];
+
+    const question = questions.find((question) => question.id === questionId);
+    if (!question) {
+      ctx.response.status = 404;
+      ctx.response.body = JSON.stringify({
+        error: `No question with ID ${questionId} found`,
+      });
+      return;
+    }
+
+    const contentList = question.relevantContent(content, answers);
     const selectedContent = contentList[index];
     if (!selectedContent) {
       ctx.response.status = 404;
