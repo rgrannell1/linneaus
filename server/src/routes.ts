@@ -104,7 +104,7 @@ export function setAnswer(_, services) {
       return;
     }
 
-    const contentId = selectedContent.id;
+    const contentId = selectedContent.id ?? selectedContent;
     if (!contentId) {
       ctx.response.status = 400;
       ctx.response.body = JSON.stringify({

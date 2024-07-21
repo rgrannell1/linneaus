@@ -3,7 +3,9 @@
  */
 
 import * as Filters from "../src/filters.ts";
+import { QuestionParts } from "../src/filters.ts";
 import { LiteralQuestionLoader } from "../src/load-questions.ts";
+import type { Question } from "../src/types/index.ts";
 
 import type { PhotoContent } from "./mirror.ts";
 
@@ -24,7 +26,7 @@ const q01 = {
 const q02 = {
   id: "q02",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q01", "Wildlife"),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(QuestionParts.id(q01), QuestionParts.choiceId(q01, "Wildlife")),
   text: "What wildlife is the subject of this photo?",
   choices: [
     "Bird",

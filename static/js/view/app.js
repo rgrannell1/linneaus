@@ -81,7 +81,7 @@ export class LinneausApp extends LitElem {
 
   async loadContentCount() {
     if (!this.questions) {
-      return html``;
+      return;
     }
 
     const question = this.questions[this.questionIndex];

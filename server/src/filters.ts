@@ -9,7 +9,7 @@
  * This file provides filters to help you select questions that contextually make sense.
  */
 
-import { Answer } from "./types/index.ts";
+import type { Answer, Question } from "./types/index.ts";
 
 /*
  * Find content with a specific question answered, with the expected answer
@@ -32,9 +32,7 @@ export function answeredQuestion<Content>(
       }
     }
 
-    return content.filter((entry) => {
-      return matchingIds.has(entry.id);
-    });
+    return matchingIds;
   };
 }
 
@@ -45,4 +43,21 @@ export function allContent<Content>() {
   return (content: Content[], _: Answer[]): Content[] => {
     return content;
   };
+}
+
+
+export class QuestionParts {
+  static id<Content>(question: Question<Content>) {
+    return question.id;
+  }
+
+  static choiceId<Content>(question: Question<Content>, text: string) {
+    const index = question.choices.findIndex((choice) => choice === text);
+
+    if (index === -1) {
+      throw new Error(`Choice ${text} not found in question ${question.id}`);
+    }
+
+    return `${index + 1}`
+  }
 }
