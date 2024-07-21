@@ -32,7 +32,7 @@ export function answeredQuestion<Content>(
       }
     }
 
-    return matchingIds;
+    return Array.from(matchingIds);
   };
 }
 

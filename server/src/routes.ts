@@ -5,6 +5,13 @@
 import { send } from "./deps.ts";
 import { Answer } from "./types/index.ts";
 
+export function logRoute() {
+  return async function (ctx: any, next: any) {
+    console.log(`${ctx.request.method} ${ctx.request.url.pathname}`);
+    await next();
+  }
+}
+
 /*
  * GET /questions
  *
@@ -53,9 +60,10 @@ export function getContentCount(_, services) {
       return;
     }
 
-    ctx.response.body = {
-      count: question.relevantContent(content, answers).length,
-    };
+    const count = question.relevantContent(content, answers).length;
+    ctx.response.body = JSON.stringify({
+      count,
+    });
   };
 }
 
@@ -213,10 +221,10 @@ export function getAnswerCount(_, services) {
       return;
     }
 
-    ctx.response.body = {
+    ctx.response.body = JSON.stringify({
       count:
         answers.filter((answer) => answer.questionId === questionId).length,
-    };
+    });
   };
 }
 

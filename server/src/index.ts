@@ -12,6 +12,7 @@ import type {
 import { Application, oakCors, Router } from "./deps.ts";
 import { SqliteStorage } from "./storage.ts";
 import {
+  logRoute,
   getAnswer,
   getAnswerCount,
   getContent,
@@ -112,6 +113,7 @@ export function linnaeusApp<Content>(
   app
     .use(staticFiles(ROOT_DIR))
     .use(oakCors())
+    .use(logRoute())
     .use(router.routes())
     .use(router.allowedMethods());
 
