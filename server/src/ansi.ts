@@ -1,4 +1,3 @@
-
 export class Ansi {
   static bold(text: string) {
     return `\u001B[1m${text}\u001B[0m`;

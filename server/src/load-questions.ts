@@ -22,7 +22,8 @@ export class YamlQuestionLoader<Content>
 
   async *getQuestions() {
     const yaml = await Deno.readTextFile(this.fpath);
-    const questions = JSON.parse(yaml);``
+    const questions = JSON.parse(yaml);
+    ``;
 
     for (const question of questions) {
       yield this.parseQuestion(question);

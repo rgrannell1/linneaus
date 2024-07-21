@@ -26,7 +26,10 @@ const q01 = {
 const q02 = {
   id: "q02",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q01", QuestionParts.choiceId(q01, "Wildlife")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q01",
+    QuestionParts.choiceId(q01, "Wildlife"),
+  ),
   text: "What wildlife is the subject of this photo?",
   choices: [
     "Bird",
@@ -43,7 +46,10 @@ const q02 = {
 const q03 = {
   id: "q03",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q01", QuestionParts.choiceId(q01, "Wildlife")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q01",
+    QuestionParts.choiceId(q01, "Wildlife"),
+  ),
   text: "What conditions did these animals live in?",
   choices: [
     "Captivity",
@@ -56,7 +62,10 @@ const q03 = {
 const q03_5 = {
   id: "q03_5",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q01", QuestionParts.choiceId(q01, "Wildlife")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q01",
+    QuestionParts.choiceId(q01, "Wildlife"),
+  ),
   text: "What conditions did these animals live in?",
   choices: [
     "Captivity",
@@ -69,7 +78,10 @@ const q03_5 = {
 const q04 = {
   id: "q04",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q02", QuestionParts.choiceId(q02, "Amphibian")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q02",
+    QuestionParts.choiceId(q02, "Amphibian"),
+  ),
   text: "What type of amphibian is this?",
   choices: [
     "Frog",
@@ -99,7 +111,10 @@ const q05 = {
 const q06 = {
   id: "q06",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q02", QuestionParts.choiceId(q02, "Bird")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q02",
+    QuestionParts.choiceId(q02, "Bird"),
+  ),
   text: "Is the subject bird in flight?",
   choices: [
     "Yes",
@@ -125,7 +140,10 @@ const q07 = {
 const q08 = {
   id: "q08",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q07", QuestionParts.choiceId(q07, "Yes")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q07",
+    QuestionParts.choiceId(q07, "Yes"),
+  ),
   text: "What type of body of water is this?",
   choices: [
     "Ocean or Sea",
@@ -141,7 +159,10 @@ const q08 = {
 const q09 = {
   id: "q09",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q01", QuestionParts.choiceId(q01, "Cityscape")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q01",
+    QuestionParts.choiceId(q01, "Cityscape"),
+  ),
   text: "What is the primary subject of this cityscape photo?",
   choices: [
     "Statue",
@@ -159,7 +180,10 @@ const q09 = {
 const q10 = {
   id: "q10",
   type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>("q09", QuestionParts.choiceId(q09, "Waterways")),
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q09",
+    QuestionParts.choiceId(q09, "Waterways"),
+  ),
   text: "What type of waterway is the focus?",
   choices: [
     "Ocean or Sea",

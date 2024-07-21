@@ -1,4 +1,3 @@
-
 import { Cache } from "../cache.ts";
 
 /*
@@ -64,7 +63,7 @@ export type Services<Content> = {
   storage: IDB<Content>;
   contentLoader: IContentLoader<Content>;
   questionsLoader: IQuestionLoader<Question<Content>>;
-  cache: Cache<Content>
+  cache: Cache<Content>;
 };
 
 /*

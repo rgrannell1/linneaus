@@ -11,21 +11,26 @@ export class LinnaeusContent extends LitElem {
       },
       questions: {
         type: Array,
-        state: true
+        state: true,
       },
       questionIndex: {
         type: String,
-        state: true
-      }
+        state: true,
+      },
     };
   }
 
   render() {
     const question = this.questions[this.questionIndex];
+    if (!question) {
+      return html`<p>Loading...</p>`;
+    }
     const index = typeof this.photoIndex === "undefined" ? 0 : this.photoIndex;
 
     return html`
-    <image width="600" id="preview-image" src="${API.photoUrl(question.id, index)}"></image>
+    <image width="600" id="preview-image" src="${
+      API.photoUrl(question.id, index)
+    }"></image>
     `;
   }
 }

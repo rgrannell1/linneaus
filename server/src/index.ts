@@ -12,12 +12,12 @@ import type {
 import { Application, oakCors, Router } from "./deps.ts";
 import { SqliteStorage } from "./storage.ts";
 import {
-  logRoute,
   getAnswer,
   getAnswerCount,
   getContent,
   getContentCount,
   getQuestions,
+  logRoute,
   setAnswer,
   staticFiles,
 } from "./routes.ts";
@@ -44,14 +44,14 @@ export async function linnaeusServices<Content>(
   const cache = new Cache<Content>(
     contentLoader,
     questionsLoader,
-    storage
+    storage,
   );
 
   return {
     storage,
     contentLoader,
     questionsLoader,
-    cache
+    cache,
   };
 }
 

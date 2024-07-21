@@ -45,7 +45,6 @@ export function allContent<Content>() {
   };
 }
 
-
 export class QuestionParts {
   static id<Content>(question: Question<Content>) {
     return question.id;
@@ -58,6 +57,6 @@ export class QuestionParts {
       throw new Error(`Choice ${text} not found in question ${question.id}`);
     }
 
-    return `${index + 1}`
+    return `${index + 1}`;
   }
 }
