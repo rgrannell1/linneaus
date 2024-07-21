@@ -1,3 +1,6 @@
+
+import { Cache } from "../cache.ts";
+
 /*
  * This file defines types used within Linneaus
  */
@@ -61,6 +64,7 @@ export type Services<Content> = {
   storage: IDB<Content>;
   contentLoader: IContentLoader<Content>;
   questionsLoader: IQuestionLoader<Question<Content>>;
+  cache: Cache<Content>
 };
 
 /*

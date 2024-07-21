@@ -22,6 +22,7 @@ import {
   staticFiles,
 } from "./routes.ts";
 import { Ansi } from "./ansi.ts";
+import { Cache } from "./cache.ts";
 
 const ROOT_DIR = `${Deno.cwd()}/static`;
 
@@ -40,10 +41,17 @@ export async function linnaeusServices<Content>(
   const storage = new SqliteStorage<Content>();
   await storage.init(questionsLoader as any);
 
+  const cache = new Cache<Content>(
+    contentLoader,
+    questionsLoader,
+    storage
+  );
+
   return {
     storage,
     contentLoader,
     questionsLoader,
+    cache
   };
 }
 

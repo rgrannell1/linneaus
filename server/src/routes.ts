@@ -20,11 +20,11 @@ export function logRoute() {
  */
 export function getQuestions(_, services) {
   const {
-    questionsLoader,
+    cache
   } = services;
 
   return async function (ctx: any) {
-    ctx.response.body = await Array.fromAsync(questionsLoader.getQuestions());
+    ctx.response.body = await cache.getQuestions();
   };
 }
 
@@ -35,21 +35,20 @@ export function getQuestions(_, services) {
  */
 export function getContentCount(_, services) {
   const {
-    storage,
-    contentLoader,
-    questionsLoader,
+    cache
   } = services;
 
   return async function (ctx: any) {
     const { questionId } = ctx.params;
+
     const [
       content,
       questions,
       answers,
     ] = await Promise.all([
-      Array.fromAsync(contentLoader.getContent()),
-      Array.fromAsync(questionsLoader.getQuestions()),
-      Array.fromAsync(storage.getAnswers(questionId)),
+      cache.getContent(),
+      cache.getQuestions(),
+      cache.getAnswers(questionId)
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -76,8 +75,7 @@ export function getContentCount(_, services) {
 export function setAnswer(_, services) {
   const {
     storage,
-    contentLoader,
-    questionsLoader,
+    cache
   } = services;
 
   return async function (ctx: any) {
@@ -89,10 +87,10 @@ export function setAnswer(_, services) {
       questions,
       answers,
     ] = await Promise.all([
-      Array.fromAsync(contentLoader.getContent()),
-      Array.fromAsync(questionsLoader.getQuestions()),
-      Array.fromAsync(storage.getAnswers(questionId)),
-    ]);
+      cache.getContent(),
+      cache.getQuestions(),
+      cache.getAnswers(questionId)
+    ])
 
     const question = questions.find((question) => question.id === questionId);
     if (!question) {
@@ -133,9 +131,7 @@ export function setAnswer(_, services) {
  */
 export function getAnswer(_, services) {
   const {
-    storage,
-    contentLoader,
-    questionsLoader,
+    cache
   } = services;
 
   return async function (ctx: any) {
@@ -146,10 +142,10 @@ export function getAnswer(_, services) {
       questions,
       answers,
     ] = await Promise.all([
-      Array.fromAsync(contentLoader.getContent()),
-      Array.fromAsync(questionsLoader.getQuestions()),
-      Array.fromAsync(storage.getAnswers(questionId)),
-    ]) as [unknown[], unknown[], Answer[]];
+      cache.getContent(),
+      cache.getQuestions(),
+      cache.getAnswers(questionId)
+    ]);
 
     const question = questions.find((question) => question.id === questionId);
     if (!question) {
@@ -200,6 +196,7 @@ export function getAnswerCount(_, services) {
   const {
     storage,
     questionsLoader,
+    cache
   } = services;
 
   return async function (ctx: any) {
@@ -209,8 +206,8 @@ export function getAnswerCount(_, services) {
       questions,
       answers,
     ] = await Promise.all([
-      Array.fromAsync(questionsLoader.getQuestions()),
-      Array.fromAsync(storage.getAnswers(questionId)),
+      cache.getQuestions(),
+      cache.getAnswers(questionId)
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -236,9 +233,7 @@ export function getAnswerCount(_, services) {
  */
 export function getContent(_, services) {
   const {
-    contentLoader,
-    storage,
-    questionsLoader
+    cache
   } = services;
 
   return async function (ctx: any) {
@@ -250,10 +245,10 @@ export function getContent(_, services) {
       questions,
       answers,
     ] = await Promise.all([
-      Array.fromAsync(contentLoader.getContent()),
-      Array.fromAsync(questionsLoader.getQuestions()),
-      Array.fromAsync(storage.getAnswers(questionId)),
-    ]) as [unknown[], unknown[], Answer[]];
+      cache.getContent(),
+      cache.getQuestions(),
+      cache.getAnswers(questionId)
+    ]);
 
     const question = questions.find((question) => question.id === questionId);
     if (!question) {
