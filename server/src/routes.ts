@@ -80,7 +80,6 @@ export function setAnswer(_, services) {
 
   return async function (ctx: any) {
     const { questionId, index } = ctx.params;
-    const { answer } = ctx.request.body;
 
     const [
       content,
@@ -91,6 +90,13 @@ export function setAnswer(_, services) {
       cache.getQuestions(),
       cache.getAnswers(questionId),
     ]);
+
+    if (!ctx.request.hasBody) {
+      ctx.response.status = 415;
+      ctx.response.body = JSON.stringify({
+        error: `No request body `,
+      });
+    }
 
     const question = questions.find((question) => question.id === questionId);
     if (!question) {
@@ -120,7 +126,8 @@ export function setAnswer(_, services) {
       return;
     }
 
-    await storage.setAnswer({ questionId, contentId, answer });
+    const {option, choice} = await ctx.request.body().value
+    await storage.setAnswer({ questionId, contentId, answer: option, choice });
   };
 }
 

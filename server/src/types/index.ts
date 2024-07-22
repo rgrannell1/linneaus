@@ -8,6 +8,7 @@ export type Config = {
   signal?: AbortSignal;
 };
 
+// TODO distinguish between answer ID and answer text. Maybe in DB instead
 export interface Answer {
   contentId: string;
   questionId: string;
