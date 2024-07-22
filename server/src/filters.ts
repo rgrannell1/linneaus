@@ -26,13 +26,13 @@ export function answeredQuestion<Content>(
 
     for (const answer of answers) {
       if (
-        answer.questionId === questionId && answer.answer === expectedAnswer
+        answer.questionId === questionId && answer.answerId === expectedAnswer
       ) {
         matchingIds.add(answer.contentId);
       }
     }
 
-    return Array.from(matchingIds);
+    return Array.from(matchingIds) as Content[]; // TODO not generalisable
   };
 }
 

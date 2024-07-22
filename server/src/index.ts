@@ -70,6 +70,9 @@ export function linnaeusRouter<Content>(
   const router = new Router();
 
   router
+    .get("/marco", (ctx) => {
+      ctx.response.body = "polo";
+    })
     .get(
       "/questions",
       oakCors(),
@@ -150,6 +153,8 @@ GET ${Ansi.bold("/answers/:questionId/count")}
   ${Ansi.green("Get the number of answers for a particular question")}
 POST ${Ansi.bold("/answers/:questionId/content/:index")}
   ${Ansi.green("Set an answer for a particular content and question")}
+GET ${Ansi.bold("/marco")}
+  ${Ansi.green("Polo! Used to check if the server is running")}
 `;
 
 /*

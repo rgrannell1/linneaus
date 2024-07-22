@@ -126,8 +126,13 @@ export function setAnswer(_, services) {
       return;
     }
 
-    const {option, choice} = await ctx.request.body().value
-    await storage.setAnswer({ questionId, contentId, answer: option, choice });
+    const { option, choice } = await ctx.request.body().value;
+    await storage.setAnswer({
+      questionId,
+      contentId,
+      answerId: option,
+      answer: choice,
+    });
   };
 }
 
@@ -190,7 +195,7 @@ export function getAnswer(_, services) {
     ctx.response.body = JSON.stringify({
       contentId: selectedContent,
       questionId,
-      answer: answer.answer,
+      answer: answer.answerId,
     });
   };
 }

@@ -267,11 +267,11 @@ export class LinneausApp extends LitElem {
       .questionIndex=${this.questionIndex}>
     </linneaus-question>
 
-    <linneaus-input
+    <linneaus-pick-one-input
       .questions=${this.questions}
       .questionIndex=${this.questionIndex}
       .selectedOption=${this.selectedOption}>
-    </linneaus-input>
+    </linneaus-pick-one-input>
 
    </body>
     `;

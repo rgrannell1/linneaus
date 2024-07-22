@@ -16,6 +16,7 @@ const ANSWERS_TABLE = `
 create table if not exists answers (
   contentId     text not null,
   questionId    text not null,
+  answerId      text not null,
   answer        text not null,
 
   primary key (contentId, questionId)
@@ -38,7 +39,11 @@ export class SqliteStorage<Content> implements IDB<Content> {
       [QUESTIONS_TABLE, ANSWERS_TABLE].map((table) => this.db.query(table)),
     );
 
-    for await (const { id, text } of questionLoader.getQuestions()) {
+    for await (const { id, type, text } of questionLoader.getQuestions()) {
+      if (type !== 'pick-one') {
+        throw new Error(`Unsupported question type: ${type}`);
+      }
+
       await this.db.query(
         "insert or replace into questions (id, text) values (?, ?)",
         [id, text],
@@ -53,14 +58,14 @@ export class SqliteStorage<Content> implements IDB<Content> {
    */
   async *getAnswers(): AsyncGenerator<Answer> {
     for (
-      const [contentId, questionId, answer] of this.db.query(
+      const [contentId, questionId, answerId] of this.db.query(
         "select * from answers",
       )
     ) {
       yield {
         contentId,
         questionId,
-        answer,
+        answerId,
       };
     }
   }
@@ -74,8 +79,8 @@ export class SqliteStorage<Content> implements IDB<Content> {
    */
   async setAnswer(answer: Answer) {
     await this.db.query(
-      "insert or replace into answers (contentId, questionId, answer) values (?, ?, ?)",
-      [answer.contentId, answer.questionId, answer.answer],
+      "insert or replace into answers (contentId, questionId, answerId) values (?, ?, ?)",
+      [answer.contentId, answer.questionId, answer.answerId],
     );
   }
 

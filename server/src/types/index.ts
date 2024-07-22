@@ -8,11 +8,11 @@ export type Config = {
   signal?: AbortSignal;
 };
 
-// TODO distinguish between answer ID and answer text. Maybe in DB instead
 export interface Answer {
   contentId: string;
   questionId: string;
-  answer: string;
+  answerId: string;
+  answer: string; // todo implement this
 }
 
 export type ContentFilter<Content> = (
