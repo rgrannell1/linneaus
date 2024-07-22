@@ -163,11 +163,12 @@ export function getAnswer(_, services) {
       return;
     }
 
-    const selectedContent = content[index];
+    const contentList = question.relevantContent(content, answers);
+    const selectedContent = contentList[index];
     if (!selectedContent) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
-        error: `No content at index ${index} found`,
+        error: `No content with ID ${index} found`,
       });
       return;
     }

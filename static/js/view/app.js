@@ -6,6 +6,7 @@ import { Keys } from "/js/constants.js";
 import "/js/view/content.js";
 import "/js/view/input.js";
 import "/js/view/navigation-guide.js";
+import "/js/view/navigation-links.js";
 import "/js/view/progress.js";
 import "/js/view/question.js";
 
@@ -237,6 +238,7 @@ export class LinneausApp extends LitElem {
     <h1>Linneaus</h1>
 
     <linneaus-navigation-guide></linneaus-navigation-guide>
+    <linneaus-navigation-links></linneaus-navigation-links>
     <linneaus-content
       .questions=${this.questions}
       .questionIndex=${this.questionIndex}
