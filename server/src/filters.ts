@@ -21,7 +21,7 @@ export function answeredQuestion<Content>(
   questionId: string,
   expectedAnswer: string,
 ) {
-  return (content: Content[], answers: Answer[]): Content[] => {
+  return (_: Content[], answers: Answer[]): Content[] => {
     const matchingIds: Set<string> = new Set([]);
 
     for (const answer of answers) {

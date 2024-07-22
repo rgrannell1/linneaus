@@ -5,7 +5,6 @@
 import * as Filters from "../src/filters.ts";
 import { QuestionParts } from "../src/filters.ts";
 import { LiteralQuestionLoader } from "../src/load-questions.ts";
-import type { Question } from "../src/types/index.ts";
 
 import type { PhotoContent } from "./mirror.ts";
 

@@ -16,7 +16,7 @@ export class YamlQuestionLoader<Content>
 
   async init() {}
 
-  parseQuestion(question: any): Question<Content> {
+  parseQuestion(_: any): Question<Content> {
     throw new Error("Not implemented");
   }
 

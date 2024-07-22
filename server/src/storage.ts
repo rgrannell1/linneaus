@@ -66,6 +66,7 @@ export class SqliteStorage<Content> implements IDB<Content> {
         contentId,
         questionId,
         answerId,
+        answer: 'IGNORE'
       };
     }
   }

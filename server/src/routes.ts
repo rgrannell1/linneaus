@@ -207,8 +207,6 @@ export function getAnswer(_, services) {
  */
 export function getAnswerCount(_, services) {
   const {
-    storage,
-    questionsLoader,
     cache,
   } = services;
 
