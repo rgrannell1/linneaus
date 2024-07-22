@@ -9,15 +9,20 @@ export class Router {
       questionId: Number.isNaN(questionId) ? 0 : questionId,
     };
   }
-  toURL() {
+
+  setUrl(contentId, questionId) {
     const url = new URL(window.location);
     const params = new URLSearchParams(url.search);
 
-    params.set('contentId', this._contentId + 1);
-    params.set('questionId', this._questionId);
+    params.set('contentId', contentId);
+    params.set('questionId', questionId);
 
     url.search = params.toString();
     window.history.replaceState({}, '', url);
+  }
+
+  toURL() {
+    this.setUrl(this._contentId + 1, this._questionId);
   }
 
   set contentId(value) {

@@ -304,6 +304,7 @@ export function staticFiles(dpath: string) {
 
     await send(ctx, ctx.request.url.pathname, {
       root: dpath,
+      index: "index.html",
     });
   };
 }
