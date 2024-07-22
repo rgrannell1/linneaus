@@ -58,11 +58,14 @@ export class LinneausApp extends LitElem {
 
   constructor() {
     super();
+
+    const { contentId, questionId } = Router.fromURL();
+
     this.imageUrl = "";
     this.questions = [];
-    this.questionIndex = 0;
+    this.questionIndex = questionId;
     this.photoCount = 0;
-    this.photoIndex = 0;
+    this.photoIndex = contentId;
     this.questionsAnswered = 0;
 
     this.api = new API();

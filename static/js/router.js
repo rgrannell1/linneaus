@@ -1,10 +1,23 @@
 export class Router {
-  fromURL() {
+  static fromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const contentId = parseInt(params.get("contentId")) - 1;
+    const questionId = parseInt(params.get("questionId"));
+
+    return {
+      contentId: Number.isNaN(contentId) ? 0 : contentId,
+      questionId: Number.isNaN(questionId) ? 0 : questionId,
+    };
   }
   toURL() {
-    window.location.hash = `#?contentId=${
-      this._contentId + 1
-    }&questionId=${this._questionId}`;
+    const url = new URL(window.location);
+    const params = new URLSearchParams(url.search);
+
+    params.set('contentId', this._contentId + 1);
+    params.set('questionId', this._questionId);
+
+    url.search = params.toString();
+    window.history.replaceState({}, '', url);
   }
 
   set contentId(value) {
