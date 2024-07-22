@@ -123,7 +123,7 @@ export class LinneausApp extends LitElem {
     );
   }
 
-  onDown() {
+  onUp() {
     this.questionIndex--;
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
@@ -142,7 +142,7 @@ export class LinneausApp extends LitElem {
     }
   }
 
-  onUp() {
+  onDown() {
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;

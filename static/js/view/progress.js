@@ -24,11 +24,11 @@ export class LinnaeusPhotoProgress extends LitElem {
       return html`<p>no eligable content for this question</p>`;
     }
 
-    const percentage = Math.round(this.questionsAnswered / this.photoCount) *
-      100;
-    const answeredPercentage = `${percentage}` === "100"
+    const percentage = ((this.questionsAnswered / this.photoCount) *
+      100).toFixed(1);
+    const answeredPercentage = this.questionsAnswered === this.photoCount
       ? "100% 🎉"
-      : percentage;
+      : `${percentage}%`;
 
     return html`
     <p>
