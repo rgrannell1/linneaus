@@ -20,6 +20,8 @@ import {
   logRoute,
   setAnswer,
   staticFiles,
+  getUnanswered,
+  healthCheck
 } from "./routes.ts";
 import { Ansi } from "./ansi.ts";
 import { Cache } from "./cache.ts";
@@ -70,39 +72,45 @@ export function linnaeusRouter<Content>(
   const router = new Router();
 
   router
-    .get("/marco", (ctx) => {
-      ctx.response.body = "polo";
-    })
-    .get(
-      "/questions",
-      oakCors(),
-      getQuestions(config, services),
-    )
-    .get(
-      "/questions/:questionId/count",
-      oakCors(),
-      getContentCount(config, services),
-    )
-    .get(
-      "/questions/:questionId/content/:index",
-      oakCors(),
-      getContent(config, services),
-    )
-    .get(
-      "/answers/:questionId/content/:index",
-      oakCors(),
-      getAnswer(config, services),
-    )
-    .get(
-      "/answers/:questionId/count",
-      oakCors(),
-      getAnswerCount(config, services),
-    )
-    .post(
-      "/answers/:questionId/content/:index",
-      oakCors(),
-      setAnswer(config, services),
-    );
+  .get(
+    "/healthCheck",
+    oakCors(),
+    healthCheck())
+  .get(
+    "/questions",
+    oakCors(),
+    getQuestions(config, services),
+  )
+  .get(
+    "/questions/:questionId/count",
+    oakCors(),
+    getContentCount(config, services),
+  )
+  .get(
+    "/questions/:questionId/content/:index",
+    oakCors(),
+    getContent(config, services),
+  )
+  .get(
+    "/answers/:questionId/content/:index",
+    oakCors(),
+    getAnswer(config, services),
+  )
+  .get(
+    "/answers/:questionId/nextUnanswered",
+    oakCors(),
+    getUnanswered(config, services),
+  )
+  .get(
+    "/answers/:questionId/count",
+    oakCors(),
+    getAnswerCount(config, services),
+  )
+  .post(
+    "/answers/:questionId/content/:index",
+    oakCors(),
+    setAnswer(config, services),
+  )
 
   return router;
 }
@@ -123,11 +131,11 @@ export function linnaeusApp<Content>(
   const app = new Application();
 
   app
-    .use(staticFiles(ROOT_DIR))
-    .use(oakCors())
-    .use(logRoute())
-    .use(router.routes())
-    .use(router.allowedMethods());
+  .use(oakCors())
+  .use(logRoute())
+  .use(router.routes())
+  .use(staticFiles(ROOT_DIR))
+  .use(router.allowedMethods());
 
   return app;
 }

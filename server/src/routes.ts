@@ -200,6 +200,67 @@ export function getAnswer(_, services) {
   };
 }
 
+export function getUnanswered(_, services) {
+  const {
+    cache,
+  } = services;
+
+  return async function (ctx: any) {
+    const { questionId } = ctx.params;
+
+    const [
+      content,
+      questions,
+      answers,
+    ] = await Promise.all([
+      cache.getContent(),
+      cache.getQuestions(),
+      cache.getAnswers(questionId),
+    ]);
+
+    const question = questions.find((question) => question.id === questionId);
+    if (!question) {
+      ctx.response.status = 404;
+      ctx.response.body = JSON.stringify({
+        error: `No question with ID ${questionId} found`,
+      });
+      return;
+    }
+
+    const contentList = question.relevantContent(content, answers);
+
+    if (!selectedContent) {
+      ctx.response.status = 404;
+      ctx.response.body = JSON.stringify({
+        error: `No content with ID ${index} found`,
+      });
+      return;
+    }
+
+    // TODO
+
+    const answer = answers.find((answer: Answer) => {
+      return answer.contentId === selectedContent &&
+        answer.questionId === questionId;
+    });
+
+    if (!answer) {
+      ctx.response.status = 200;
+      ctx.response.body = JSON.stringify({
+        error:
+          `No answer found for question ${questionId} and content ${selectedContent}`,
+      });
+      return;
+    }
+
+    ctx.response.body = JSON.stringify({
+      contentId: selectedContent,
+      questionId,
+      answer: answer.answerId,
+    });
+  };
+}
+
 /*
  * GET /answers/:questionId/contentCount
  *
@@ -307,4 +368,12 @@ export function staticFiles(dpath: string) {
       index: "index.html",
     });
   };
+}
+
+export function healthCheck() {
+  return async function (ctx: any) {
+    ctx.response.body = JSON.stringify({
+      status: "ok",
+    });
+  }
 }

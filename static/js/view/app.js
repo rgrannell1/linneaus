@@ -53,6 +53,10 @@ export class LinneausApp extends LitElem {
         type: Number,
         state: true,
       },
+      offline: {
+        type: Boolean,
+        state: true,
+      }
     };
   }
 
@@ -72,15 +76,37 @@ export class LinneausApp extends LitElem {
     this.router = new Router();
     this.router.questionId = this.questionIndex;
     this.router.contentId = this.photoIndex;
+
+    this.offline = false;
   }
 
   connectedCallback() {
     super.connectedCallback();
     addEventListener("keydown", this.handleKeyDown.bind(this));
 
-    this.loadQuestions()
-      .then(() => this.loadContentCount())
-      .then(() => this.loadAnsweredCount());
+    this.healthcheckPid = setInterval(async () => {
+      try {
+        await this.api.marco();
+        this.offline = false;
+      } catch (err) {
+        this.offline = true;
+      }
+      this.requestUpdate();
+    }, 2_500);
+
+    Promise.all([
+      this.loadQuestions(),
+      this.loadContentCount(),
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+    ]);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    clearInterval(this.healthcheckPid);
+
+    removeEventListener("keydown", this.handleKeyDown);
   }
 
   async loadQuestions() {
@@ -245,6 +271,15 @@ export class LinneausApp extends LitElem {
     const backgroundColour = BACKGROUNDS[backgroundModulus];
 
     document.querySelector("html").style.backgroundColor = backgroundColour;
+
+    // greyscale when offline
+    document.querySelector('html').style.filter = this.offline
+      ? 'grayscale(100%)'
+      : 'none';
+
+    document.querySelector('#offline-message').className = this.offline
+      ? 'active'
+      : 'none';
 
     return html`
    <body>

@@ -4,6 +4,14 @@ export class API {
   static photoUrl(questionIndex, index) {
     return `${ENDPOINT}/questions/${questionIndex}/content/${index}?mode=photo#time=${Date.now()}`;
   }
+
+  async marco() {
+    const res = await fetch(`${ENDPOINT}/healthCheck`, {
+      timeout: 1_000,
+    });
+    return res.json();
+  }
+
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);
     return res.json();
