@@ -58,15 +58,15 @@ export class SqliteStorage<Content> implements IDB<Content> {
    */
   async *getAnswers(): AsyncGenerator<Answer> {
     for (
-      const [contentId, questionId, answerId] of this.db.query(
-        "select * from answers",
+      const [contentId, questionId, answerId, answer] of this.db.query(
+        "select contentId, questionId, answerId, answer from answers",
       )
     ) {
       yield {
         contentId,
         questionId,
         answerId,
-        answer: 'IGNORE'
+        answer
       };
     }
   }
@@ -80,8 +80,8 @@ export class SqliteStorage<Content> implements IDB<Content> {
    */
   async setAnswer(answer: Answer) {
     await this.db.query(
-      "insert or replace into answers (contentId, questionId, answerId) values (?, ?, ?)",
-      [answer.contentId, answer.questionId, answer.answerId],
+      "insert or replace into answers (contentId, questionId, answerId, answer) values (?, ?, ?, ?)",
+      [answer.contentId, answer.questionId, answer.answerId, answer.answer],
     );
   }
 
