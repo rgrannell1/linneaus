@@ -2,6 +2,7 @@ import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
 import { API } from "/js/api.js";
 import { Keys } from "/js/constants.js";
+import { Router } from "/js/router.js";
 
 import "/js/view/content.js";
 import "/js/view/input.js";
@@ -65,6 +66,9 @@ export class LinneausApp extends LitElem {
     this.questionsAnswered = 0;
 
     this.api = new API();
+    this.router = new Router();
+    this.router.questionId = this.questionIndex;
+    this.router.contentId = this.photoIndex;
   }
 
   connectedCallback() {
@@ -126,6 +130,8 @@ export class LinneausApp extends LitElem {
 
   onUp() {
     this.questionIndex--;
+    this.router.questionId = this.questionIndex; // todo use question id
+
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
     }
@@ -145,6 +151,8 @@ export class LinneausApp extends LitElem {
 
   onDown() {
     this.questionIndex++;
+    this.router.questionId = this.questionIndex; // todo use question id
+
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
     }
@@ -161,6 +169,7 @@ export class LinneausApp extends LitElem {
 
   onLeft() {
     this.photoIndex--;
+    this.router.contentId = this.photoIndex; // todo use question id
 
     if (this.photoIndex < 0) {
       this.photoIndex = Math.max(0, this.photoCount - 1);
@@ -171,6 +180,7 @@ export class LinneausApp extends LitElem {
 
   onRight() {
     this.photoIndex++;
+    this.router.contentId = this.photoIndex; // todo use question id
 
     if (this.photoIndex > this.photoCount - 1) {
       this.photoIndex = 0;
