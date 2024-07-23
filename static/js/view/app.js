@@ -33,6 +33,10 @@ export class LinneausApp extends LitElem {
         type: Array,
         state: true,
       },
+      question: {
+        type: Object,
+        state: true
+      },
       questionIndex: {
         type: Number,
         state: true,
@@ -68,6 +72,7 @@ export class LinneausApp extends LitElem {
     this.imageUrl = "";
     this.questions = [];
     this.questionIndex = questionId;
+
     this.photoCount = 0;
     this.photoIndex = contentId;
     this.questionsAnswered = 0;
@@ -111,31 +116,34 @@ export class LinneausApp extends LitElem {
 
   async loadQuestions() {
     this.questions = await this.api.getQuestions();
+    this.question = this.questions[this.questionIndex];
   }
 
   async loadContentCount() {
-    if (!this.questions) {
+    if (!this.question) {
       return;
     }
 
-    const question = this.questions[this.questionIndex];
-    this.photoCount = await this.api.contentCount(question.id);
+
+    this.photoCount = await this.api.contentCount(this.question.id);
   }
 
   async loadAnsweredCount() {
-    if (!this.questions) {
-      return html``;
+    if (!this.question) {
+      return;
     }
-    const question = this.questions[this.questionIndex];
-    const { count } = await this.api.getAnswerCount(question.id);
+    const { count } = await this.api.getAnswerCount(this.question.id);
     this.questionsAnswered = count;
   }
 
   async loadAnswer() {
-    const question = this.questions[this.questionIndex];
+    if (!this.question) {
+      return;
+    }
+
     const answer = await this.api.getAnswer(
       this.photoIndex,
-      question.id,
+      this.question.id,
     );
 
     if (answer) {
@@ -144,16 +152,15 @@ export class LinneausApp extends LitElem {
   }
 
   async saveAnswer(option) {
-    if (!this.questions) {
+    if (!this.question) {
       return;
     }
-    const question = this.questions[this.questionIndex];
 
     return this.api.saveAnswer(
       this.photoIndex,
-      question.id,
+      this.question.id,
       option,
-      question.choices[option - 1],
+      this.question.choices[option - 1],
     );
   }
 
@@ -162,6 +169,7 @@ export class LinneausApp extends LitElem {
 
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
+      this.question = this.questions[this.questionIndex];
     }
     this.router.questionId = this.questionIndex; // todo use question id
 
@@ -183,6 +191,7 @@ export class LinneausApp extends LitElem {
 
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
+      this.question = this.questions[this.questionIndex];
     }
     this.router.questionId = this.questionIndex; // todo use question id
 
@@ -219,9 +228,7 @@ export class LinneausApp extends LitElem {
   }
 
   handlePickOneKeypress(event) {
-    const question = this.questions[this.questionIndex];
-
-    for (let option = 1; option <= question.choices.length; option++) {
+    for (let option = 1; option <= this.question.choices.length; option++) {
       if (event.keyCode == 48 + option) {
         this.selectedOption = option;
         this.saveAnswer(option).then(() => {
@@ -242,8 +249,7 @@ export class LinneausApp extends LitElem {
       this.onDown();
     }
 
-    const question = this.questions[this.questionIndex];
-    if (question.type === "pick-one") {
+    if (this.question.type === "pick-one") {
       this.handlePickOneKeypress(event);
     }
   }
@@ -252,6 +258,7 @@ export class LinneausApp extends LitElem {
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
+      this.question = this.questions[this.questionIndex];
     }
   }
 
@@ -259,6 +266,7 @@ export class LinneausApp extends LitElem {
     this.questionIndex--;
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
+      this.question = this.questions[this.questionIndex];
     }
   }
 

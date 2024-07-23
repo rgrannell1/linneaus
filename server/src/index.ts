@@ -21,7 +21,7 @@ import {
   setAnswer,
   staticFiles,
   getUnanswered,
-  healthCheck
+  checkOnline
 } from "./routes.ts";
 import { Ansi } from "./ansi.ts";
 import { Cache } from "./cache.ts";
@@ -75,7 +75,7 @@ export function linnaeusRouter<Content>(
   .get(
     "/healthCheck",
     oakCors(),
-    healthCheck())
+    checkOnline())
   .get(
     "/questions",
     oakCors(),

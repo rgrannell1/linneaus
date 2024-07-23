@@ -370,7 +370,7 @@ export function staticFiles(dpath: string) {
   };
 }
 
-export function healthCheck() {
+export function checkOnline() {
   return async function (ctx: any) {
     ctx.response.body = JSON.stringify({
       status: "ok",
