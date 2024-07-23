@@ -117,6 +117,9 @@ export class LinneausApp extends LitElem {
   async loadQuestions() {
     this.questions = await this.api.getQuestions();
     this.question = this.questions[this.questionIndex];
+
+    this.loadAnswer();
+    this.loadContentCount();
   }
 
   async loadContentCount() {
