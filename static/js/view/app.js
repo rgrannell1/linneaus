@@ -78,11 +78,12 @@ export class LinneausApp extends LitElem {
     this.questionsAnswered = 0;
 
     this.api = new API();
+    this.offline = false;
+
+    // update the URL based on selected questionId and contentId
     this.router = new Router();
     this.router.questionId = this.questionIndex;
     this.router.contentId = this.photoIndex;
-
-    this.offline = false;
   }
 
   connectedCallback() {
@@ -92,11 +93,15 @@ export class LinneausApp extends LitElem {
     this.healthcheckPid = setInterval(async () => {
       try {
         await this.api.marco();
-        this.offline = false;
+        if (this.offline) {
+          this.offline = false;
+        }
       } catch (err) {
-        this.offline = true;
+        if (!this.offline) {
+          this.offline = true;
+        }
       }
-      this.requestUpdate();
+      //this.requestUpdate();
     }, 2_500);
 
     Promise.all([
@@ -104,7 +109,9 @@ export class LinneausApp extends LitElem {
       this.loadContentCount(),
       this.loadAnsweredCount(),
       this.loadAnswer(),
-    ]);
+    ]).then(( ) => {
+      //this.requestUpdate();
+    });
   }
 
   disconnectedCallback() {
@@ -118,15 +125,19 @@ export class LinneausApp extends LitElem {
     this.questions = await this.api.getQuestions();
     this.question = this.questions[this.questionIndex];
 
-    this.loadAnswer();
-    this.loadContentCount();
+    Promise.all([
+      this.loadContentCount(),
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+    ]).then(( ) => {
+      //this.requestUpdate();
+    });
   }
 
   async loadContentCount() {
     if (!this.question) {
       return;
     }
-
 
     this.photoCount = await this.api.contentCount(this.question.id);
   }
@@ -172,8 +183,9 @@ export class LinneausApp extends LitElem {
 
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
-      this.question = this.questions[this.questionIndex];
     }
+
+    this.question = this.questions[this.questionIndex];
     this.router.questionId = this.questionIndex; // todo use question id
 
     this.loadContentCount().then(() => {
@@ -194,13 +206,15 @@ export class LinneausApp extends LitElem {
 
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
-      this.question = this.questions[this.questionIndex];
     }
-    this.router.questionId = this.questionIndex; // todo use question id
+    this.question = this.questions[this.questionIndex];
+    // todo use question id
+    this.router.questionId = this.questionIndex;
 
     this.loadContentCount().then(() => {
       if (this.photoIndex > this.photoCount - 1) {
         this.photoIndex = Math.max(0, this.photoCount - 1);
+        //this.requestUpdate();
       }
     });
 
@@ -261,16 +275,16 @@ export class LinneausApp extends LitElem {
     this.questionIndex++;
     if (this.questionIndex >= this.questions.length) {
       this.questionIndex = 0;
-      this.question = this.questions[this.questionIndex];
     }
+    this.question = this.questions[this.questionIndex];
   }
 
   decrementQuestionIndex() {
     this.questionIndex--;
     if (this.questionIndex < 0) {
       this.questionIndex = this.questions.length - 1;
-      this.question = this.questions[this.questionIndex];
     }
+    this.question = this.questions[this.questionIndex];
   }
 
   renderFileInfo() {
