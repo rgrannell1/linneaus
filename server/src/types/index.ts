@@ -7,9 +7,9 @@ import { Cache } from "../cache.ts";
  *     to render as text, photo, or another supported type
  */
 export type Content<T> = {
-  id: string,
-  type: string,
-  value: T
+  id: string;
+  type: string;
+  value: T;
 };
 
 /*

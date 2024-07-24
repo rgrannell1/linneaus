@@ -1,7 +1,6 @@
 /*
  * Defines a class with static methods to generate ANSI escape codes
  * for text formatting.
- *
  */
 export class Ansi {
   static bold(text: string) {

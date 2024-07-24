@@ -1,9 +1,9 @@
 import type {
+  Content,
   IContentLoader,
   IDB,
   IQuestionLoader,
   Question,
-  Content
 } from "./types/index.ts";
 
 export class Cache<T> {

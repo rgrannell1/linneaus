@@ -12,7 +12,7 @@ export class LinnaeusPhoto extends LitElem {
       question: {
         type: Object,
         state: true,
-      }
+      },
     };
   }
 
@@ -37,7 +37,7 @@ export class LinnaeusText extends LitElem {
       question: {
         type: Object,
         state: true,
-      }
+      },
     };
   }
 

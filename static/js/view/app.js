@@ -35,7 +35,7 @@ export class LinneausApp extends LitElem {
       },
       question: {
         type: Object,
-        state: true
+        state: true,
       },
       questionIndex: {
         type: Number,
@@ -60,7 +60,7 @@ export class LinneausApp extends LitElem {
       offline: {
         type: Boolean,
         state: true,
-      }
+      },
     };
   }
 
@@ -101,7 +101,6 @@ export class LinneausApp extends LitElem {
           this.offline = true;
         }
       }
-      //this.requestUpdate();
     }, 2_500);
 
     Promise.all([
@@ -109,8 +108,7 @@ export class LinneausApp extends LitElem {
       this.loadContentCount(),
       this.loadAnsweredCount(),
       this.loadAnswer(),
-    ]).then(( ) => {
-      //this.requestUpdate();
+    ]).then(() => {
     });
   }
 
@@ -129,8 +127,7 @@ export class LinneausApp extends LitElem {
       this.loadContentCount(),
       this.loadAnsweredCount(),
       this.loadAnswer(),
-    ]).then(( ) => {
-      //this.requestUpdate();
+    ]).then(() => {
     });
   }
 
@@ -166,8 +163,8 @@ export class LinneausApp extends LitElem {
   }
 
   async saveEventAnswer(event) {
-    console.log('receiving');
-    console.log(event)
+    console.log("receiving");
+    console.log(event);
   }
 
   async saveAnswer(option) {
@@ -175,14 +172,14 @@ export class LinneausApp extends LitElem {
       return;
     }
 
-    if (this.question.type === 'pick-one') {
+    if (this.question.type === "pick-one") {
       return this.api.saveAnswer(
         this.contentIndex,
         this.question.id,
         option,
         this.question.choices[option - 1],
       );
-    } else if (this.question.type === 'free-text') {
+    } else if (this.question.type === "free-text") {
       return this.api.saveAnswer(
         this.contentIndex,
         this.question.id,
@@ -190,7 +187,7 @@ export class LinneausApp extends LitElem {
         option,
       );
     } else {
-      throw new Error('Not supported') // TODO
+      throw new Error("Not supported"); // TODO
     }
   }
 
@@ -230,7 +227,6 @@ export class LinneausApp extends LitElem {
     this.loadContentCount().then(() => {
       if (this.contentIndex > this.photoCount - 1) {
         this.contentIndex = Math.max(0, this.photoCount - 1);
-        //this.requestUpdate();
       }
     });
 
@@ -272,7 +268,7 @@ export class LinneausApp extends LitElem {
   }
 
   handleKeyDown(event) {
-    if (this.question && this.question.type !== 'free-text') {
+    if (this.question && this.question.type !== "free-text") {
       if (event.keyCode == Keys.LEFT) {
         this.onLeft();
       } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
@@ -320,7 +316,7 @@ export class LinneausApp extends LitElem {
     <linneaus-photo
       .question=${this.question}
       .contentIndex=${this.contentIndex}></linneaus-photo>
-    `
+    `;
   }
 
   /*
@@ -337,13 +333,13 @@ export class LinneausApp extends LitElem {
 
     const question = this.question;
 
-    if (question.type === 'pick-one') {
+    if (question.type === "pick-one") {
       return html`<linneaus-pick-one-input
         .question=${this.question}
         .selectedOption=${this.selectedOption}>
       </linneaus-pick-one-input>
       `;
-    } else if (question.type === 'free-text') {
+    } else if (question.type === "free-text") {
       return html`<linneaus-text-input
         @save-answer=${this.saveEventAnswer}
         .question=${this.question}></linneaus-text-input>`;
@@ -359,15 +355,15 @@ export class LinneausApp extends LitElem {
     document.querySelector("html").style.backgroundColor = backgroundColour;
 
     // greyscale when offline
-    document.querySelector('html').style.filter = this.offline
-      ? 'grayscale(100%)'
-      : 'none';
+    document.querySelector("html").style.filter = this.offline
+      ? "grayscale(100%)"
+      : "none";
 
-    document.querySelector('#offline-message').className = this.offline
-      ? 'active'
-      : 'none';
+    document.querySelector("#offline-message").className = this.offline
+      ? "active"
+      : "none";
 
-      return html`
+    return html`
    <body>
     <h1>Linneaus</h1>
 

@@ -7,7 +7,7 @@ export class LinnaeusQuestion extends LitElem {
       question: {
         type: Object,
         state: true,
-      }
+      },
     };
   }
 

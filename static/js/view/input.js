@@ -84,7 +84,7 @@ class LinnaeusTextInput extends LitElem {
     return {
       question: {
         type: Object,
-        state: true
+        state: true,
       },
     };
   }
@@ -93,8 +93,8 @@ class LinnaeusTextInput extends LitElem {
     Keys.RIGHT,
     Keys.LEFT,
     Keys.UP,
-    Keys.DOWN
-  ])
+    Keys.DOWN,
+  ]);
 
   connectedCallback() {
     super.connectedCallback();
@@ -110,11 +110,11 @@ class LinnaeusTextInput extends LitElem {
 
   handleKeyDown(event) {
     // submit an answer
-    const value = document.querySelector('#free-text-input');
+    const value = document.querySelector("#free-text-input");
 
     // NOTE: no concurrency control here.
     // saves can happen out-of-order, potentially
-    this.broadcast('save-answer', {
+    this.broadcast("save-answer", {
       contentIndex: this.contentIndex,
       questionId: this.question.id,
       text: value,
@@ -122,7 +122,7 @@ class LinnaeusTextInput extends LitElem {
   }
 
   render() {
-    return html`<input id="free-text-input" type="text" placeholder="Type here. Answer saves on keystroke"></input>`
+    return html`<input id="free-text-input" type="text" placeholder="Type here. Answer saves on keystroke"></input>`;
   }
 }
 

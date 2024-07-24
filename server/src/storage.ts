@@ -32,9 +32,9 @@ export class SqliteStorage<Content> implements IDB<Content> {
   db: DB;
 
   static SUPPORTED_TYPES = new Set([
-    'pick-one',
-    'free-text'
-  ])
+    "pick-one",
+    "free-text",
+  ]);
 
   constructor(fpath: string = ".linnaeus.db") {
     this.db = new DB(fpath);
@@ -66,14 +66,14 @@ export class SqliteStorage<Content> implements IDB<Content> {
     if (!questionId) {
       for (
         const [contentId, questionId, answerId, answer] of this.db.query(
-          "select contentId, questionId, answerId, answer from answers"
+          "select contentId, questionId, answerId, answer from answers",
         )
       ) {
         yield {
           contentId,
           questionId,
           answerId,
-          answer
+          answer,
         };
       }
 
@@ -83,14 +83,14 @@ export class SqliteStorage<Content> implements IDB<Content> {
     for (
       const [contentId, answerId, answer] of this.db.query(
         "select contentId, answerId, answer from answers where questionId = ?",
-        [questionId]
+        [questionId],
       )
     ) {
       yield {
         contentId,
         questionId,
         answerId,
-        answer
+        answer,
       };
     }
   }

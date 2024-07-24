@@ -20,7 +20,8 @@ export class LinnaeusNavigationLinks extends LitElem {
   }
   render() {
     const firstHref = `?contentId=1&questionId=${this.questionId}`;
-    const lastHref = `?contentId=${this.photoCount}&questionId=${this.questionId}`;
+    const lastHref =
+      `?contentId=${this.photoCount}&questionId=${this.questionId}`;
 
     return html`
     <p>

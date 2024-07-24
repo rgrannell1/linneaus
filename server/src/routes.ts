@@ -376,5 +376,5 @@ export function checkOnline() {
     ctx.response.body = JSON.stringify({
       status: "ok",
     });
-  }
+  };
 }

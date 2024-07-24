@@ -13,16 +13,16 @@ import type {
 import { Application, oakCors, Router } from "./deps.ts";
 import { SqliteStorage } from "./storage.ts";
 import {
+  checkOnline,
   getAnswer,
   getAnswerCount,
   getContent,
   getContentCount,
   getQuestions,
+  getUnanswered,
   logRoute,
   setAnswer,
   staticFiles,
-  getUnanswered,
-  checkOnline
 } from "./routes.ts";
 import { Ansi } from "./ansi.ts";
 import { Cache } from "./cache.ts";
@@ -73,45 +73,46 @@ export function linnaeusRouter<T>(
   const router = new Router();
 
   router
-  .get(
-    "/healthCheck",
-    oakCors(),
-    checkOnline())
-  .get(
-    "/questions",
-    oakCors(),
-    getQuestions(config, services),
-  )
-  .get(
-    "/questions/:questionId/count",
-    oakCors(),
-    getContentCount(config, services),
-  )
-  .get(
-    "/questions/:questionId/content/:index",
-    oakCors(),
-    getContent(config, services),
-  )
-  .get(
-    "/answers/:questionId/content/:index",
-    oakCors(),
-    getAnswer(config, services),
-  )
-  .get(
-    "/answers/:questionId/nextUnanswered",
-    oakCors(),
-    getUnanswered(config, services),
-  )
-  .get(
-    "/answers/:questionId/count",
-    oakCors(),
-    getAnswerCount(config, services),
-  )
-  .post(
-    "/answers/:questionId/content/:index",
-    oakCors(),
-    setAnswer(config, services),
-  )
+    .get(
+      "/healthCheck",
+      oakCors(),
+      checkOnline(),
+    )
+    .get(
+      "/questions",
+      oakCors(),
+      getQuestions(config, services),
+    )
+    .get(
+      "/questions/:questionId/count",
+      oakCors(),
+      getContentCount(config, services),
+    )
+    .get(
+      "/questions/:questionId/content/:index",
+      oakCors(),
+      getContent(config, services),
+    )
+    .get(
+      "/answers/:questionId/content/:index",
+      oakCors(),
+      getAnswer(config, services),
+    )
+    .get(
+      "/answers/:questionId/nextUnanswered",
+      oakCors(),
+      getUnanswered(config, services),
+    )
+    .get(
+      "/answers/:questionId/count",
+      oakCors(),
+      getAnswerCount(config, services),
+    )
+    .post(
+      "/answers/:questionId/content/:index",
+      oakCors(),
+      setAnswer(config, services),
+    );
 
   return router;
 }
@@ -132,11 +133,11 @@ export function linnaeusApp<T>(
   const app = new Application();
 
   app
-  .use(oakCors())
-  .use(logRoute())
-  .use(router.routes())
-  .use(staticFiles(ROOT_DIR))
-  .use(router.allowedMethods());
+    .use(oakCors())
+    .use(logRoute())
+    .use(router.routes())
+    .use(staticFiles(ROOT_DIR))
+    .use(router.allowedMethods());
 
   return app;
 }

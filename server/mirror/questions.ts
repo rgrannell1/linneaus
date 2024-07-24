@@ -199,8 +199,8 @@ const q11 = {
   id: "q11",
   type: "free-text",
   relevantContent: Filters.allContent<PhotoContent>(),
-  text: "Describe this image"
-}
+  text: "Describe this image",
+};
 
 export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q01,
@@ -214,5 +214,5 @@ export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q08,
   q09,
   q10,
-  q11
+  q11,
 ]);

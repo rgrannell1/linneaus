@@ -14,11 +14,11 @@ export class Router {
     const url = new URL(window.location);
     const params = new URLSearchParams(url.search);
 
-    params.set('contentId', contentId);
-    params.set('questionId', questionId);
+    params.set("contentId", contentId);
+    params.set("questionId", questionId);
 
     url.search = params.toString();
-    window.history.replaceState({}, '', url);
+    window.history.replaceState({}, "", url);
   }
 
   toURL() {

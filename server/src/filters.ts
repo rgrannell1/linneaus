@@ -9,7 +9,7 @@
  * This file provides filters to help you select questions that contextually make sense.
  */
 
-import type { Answer, Question, Content } from "./types/index.ts";
+import type { Answer, Content, Question } from "./types/index.ts";
 
 /*
  * Find content with a specific question answered, with the expected answer
