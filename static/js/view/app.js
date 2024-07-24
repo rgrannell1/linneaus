@@ -178,7 +178,7 @@ export class LinneausApp extends LitElem {
         option,
       );
     } else {
-      throw new Error("Not supported"); // TODO
+      throw new Error(`question-type "${this.question.type}" is not supported`);
     }
   }
 
@@ -258,7 +258,21 @@ export class LinneausApp extends LitElem {
     }
   }
 
+  handleFreeTextKeypress(event) {
+    if (event.target.id !== "free-text-input") {
+      return;
+    }
+
+    const value = event.target.value;
+    this.saveAnswer(value);
+  }
+
   handleKeyDown(event) {
+    if (this.question.type === "free-text"  && event.target.id !== 'free-text-input') {
+      if (event.keyCode == Keys.LEFT || event.keyCode == Keys.RIGHT) {
+        document.querySelector("#free-text-input").value = '';
+      }
+    }
 
     if (this.question && event.target.id !== 'free-text-input')  {
       if (event.keyCode == Keys.LEFT) {
@@ -281,7 +295,9 @@ export class LinneausApp extends LitElem {
     // TODO bind this in the component itself
     if (this.question.type === "pick-one") {
       this.handlePickOneKeypress(event);
-    }
+    } else if (this.question.type === "free-text") {
+      this.handleFreeTextKeypress(event);
+    };
   }
 
   incrementQuestionIndex() {
