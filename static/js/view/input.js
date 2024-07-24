@@ -122,7 +122,15 @@ class LinnaeusTextInput extends LitElem {
   }
 
   render() {
-    return html`<input id="free-text-input" type="text" placeholder="Type here. Answer saves on keystroke"></input>`;
+    const placeholder = "Type here. Saves on keystroke";
+
+    return html`
+    <input
+      id="free-text-input"
+      type="text"
+      title="Press Enter to move to next content"
+      placeholder="${placeholder}"></input>
+    `;
   }
 }
 

@@ -21,14 +21,6 @@ const BACKGROUNDS = [
 export class LinneausApp extends LitElem {
   static get properties() {
     return {
-      imageUrl: {
-        type: String,
-        state: true,
-      },
-      imagePath: {
-        type: String,
-        state: true,
-      },
       questions: {
         type: Array,
         state: true,
@@ -69,7 +61,6 @@ export class LinneausApp extends LitElem {
 
     const { contentId, questionId } = Router.fromURL();
 
-    this.imageUrl = "";
     this.questions = [];
     this.questionIndex = questionId;
 
@@ -309,10 +300,6 @@ export class LinneausApp extends LitElem {
     this.question = this.questions[this.questionIndex];
   }
 
-  renderFileInfo() {
-    return html`<p id="photo-path">${this.imagePath}</p>`;
-  }
-
   /*
    * Renders the correct content
    */
@@ -385,8 +372,6 @@ export class LinneausApp extends LitElem {
       .photoCount=${this.photoCount}
       .questionsAnswered=${this.questionsAnswered}
       ></linneaus-photo-progress>
-
-    ${this.renderFileInfo()}
 
     <linneaus-question .question=${this.question}></linneaus-question>
 
