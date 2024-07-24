@@ -4,7 +4,7 @@ import { html } from "/js/library/lit.js";
 export class LinnaeusPhotoProgress extends LitElem {
   static get properties() {
     return {
-      photoIndex: {
+      contentIndex: {
         type: Number,
         state: true,
       },
@@ -33,7 +33,7 @@ export class LinnaeusPhotoProgress extends LitElem {
     return html`
     <p>
       photo <span id="photo-index">${
-      this.photoIndex + 1
+      this.contentIndex + 1
     }</span> of <span id="photo-count">${this.photoCount}</span> |
       <span id="photo-answered-count">${this.questionsAnswered}</span> answered (<span id="photo-answered-percentage">${answeredPercentage}</span>)
     </p>

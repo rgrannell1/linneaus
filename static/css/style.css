@@ -47,3 +47,10 @@ body {
   color: white;
   background-color: black;
 }
+
+input[type="text"] {
+  font-size: 1em;
+  background: transparent;
+  border: 2px solid black;
+  width: 600px;
+}

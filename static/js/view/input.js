@@ -1,15 +1,12 @@
 import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
+import { Keys } from "/js/constants.js";
 
 class LinnaeusPickOneInput extends LitElem {
   static get properties() {
     return {
-      questions: {
-        type: Array,
-        state: true,
-      },
-      questionIndex: {
-        type: Number,
+      question: {
+        type: Object,
         state: true,
       },
       selectedOption: {
@@ -20,17 +17,11 @@ class LinnaeusPickOneInput extends LitElem {
   }
 
   render() {
-    if (!this.questions || this.questions.length === 0) {
+    if (!this.question) {
       return html`<p>Loading...</p>`;
     }
 
-    const index = typeof this.questionIndex === "undefined"
-      ? 0
-      : this.questionIndex;
-
-    const question = this.questions[index];
-    const choices = question.choices ?? [];
-
+    const choices = this.question.choices ?? [];
     return html`
       <ul class="answers-list">
         ${
@@ -50,12 +41,8 @@ customElements.define("linneaus-pick-one-input", LinnaeusPickOneInput);
 class LinnaeusPickManyInput extends LitElem {
   static get properties() {
     return {
-      questions: {
-        type: Array,
-        state: true,
-      },
-      questionIndex: {
-        type: Number,
+      question: {
+        type: Object,
         state: true,
       },
       selectedOptions: {
@@ -66,7 +53,7 @@ class LinnaeusPickManyInput extends LitElem {
   }
 
   render() {
-    if (!this.questions || this.questions.length === 0) {
+    if (!this.question) {
       return html`<p>Loading...</p>`;
     }
 
@@ -74,7 +61,6 @@ class LinnaeusPickManyInput extends LitElem {
       this.selectedOptions = {};
     }
 
-    const question = this.questions[index];
     const choices = question.choices ?? [];
 
     return html`
@@ -92,3 +78,52 @@ class LinnaeusPickManyInput extends LitElem {
 }
 
 customElements.define("linneaus-pick-many-input", LinnaeusPickManyInput);
+
+class LinnaeusTextInput extends LitElem {
+  static get properties() {
+    return {
+      question: {
+        type: Object,
+        state: true
+      },
+    };
+  }
+
+  static BLOCKED = new Set([
+    Keys.RIGHT,
+    Keys.LEFT,
+    Keys.UP,
+    Keys.DOWN
+  ])
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    addEventListener("keydown", this.handleKeyDown.bind(this));
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    removeEventListener("keydown", this.handleKeyDown);
+  }
+
+  handleKeyDown(event) {
+    // submit an answer
+    const value = document.querySelector('#free-text-input');
+
+    // NOTE: no concurrency control here.
+    // saves can happen out-of-order, potentially
+    this.broadcast('save-answer', {
+      contentIndex: this.contentIndex,
+      questionId: this.question.id,
+      text: value,
+    });
+  }
+
+  render() {
+    return html`<input id="free-text-input" type="text" placeholder="Type here. Answer saves on keystroke"></input>`
+  }
+}
+
+customElements.define("linneaus-text-input", LinnaeusTextInput);

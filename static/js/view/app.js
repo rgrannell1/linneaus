@@ -45,7 +45,7 @@ export class LinneausApp extends LitElem {
         type: Number,
         state: true,
       },
-      photoIndex: {
+      contentIndex: {
         type: Number,
         state: true,
       },
@@ -74,7 +74,7 @@ export class LinneausApp extends LitElem {
     this.questionIndex = questionId;
 
     this.photoCount = 0;
-    this.photoIndex = contentId;
+    this.contentIndex = contentId;
     this.questionsAnswered = 0;
 
     this.api = new API();
@@ -83,7 +83,7 @@ export class LinneausApp extends LitElem {
     // update the URL based on selected questionId and contentId
     this.router = new Router();
     this.router.questionId = this.questionIndex;
-    this.router.contentId = this.photoIndex;
+    this.router.contentId = this.contentIndex;
   }
 
   connectedCallback() {
@@ -156,7 +156,7 @@ export class LinneausApp extends LitElem {
     }
 
     const answer = await this.api.getAnswer(
-      this.photoIndex,
+      this.contentIndex,
       this.question.id,
     );
 
@@ -165,17 +165,33 @@ export class LinneausApp extends LitElem {
     }
   }
 
+  async saveEventAnswer(event) {
+    console.log('receiving');
+    console.log(event)
+  }
+
   async saveAnswer(option) {
     if (!this.question) {
       return;
     }
 
-    return this.api.saveAnswer(
-      this.photoIndex,
-      this.question.id,
-      option,
-      this.question.choices[option - 1],
-    );
+    if (this.question.type === 'pick-one') {
+      return this.api.saveAnswer(
+        this.contentIndex,
+        this.question.id,
+        option,
+        this.question.choices[option - 1],
+      );
+    } else if (this.question.type === 'free-text') {
+      return this.api.saveAnswer(
+        this.contentIndex,
+        this.question.id,
+        "",
+        option,
+      );
+    } else {
+      throw new Error('Not supported') // TODO
+    }
   }
 
   onUp() {
@@ -189,15 +205,15 @@ export class LinneausApp extends LitElem {
     this.router.questionId = this.questionIndex; // todo use question id
 
     this.loadContentCount().then(() => {
-      if (this.photoIndex > this.photoCount - 1) {
-        this.photoIndex = Math.max(0, this.photoCount - 1);
+      if (this.contentIndex > this.photoCount - 1) {
+        this.contentIndex = Math.max(0, this.photoCount - 1);
       }
     });
     this.loadAnsweredCount();
     this.loadAnswer();
 
-    if (this.photoIndex > this.photoCount - 1) {
-      this.photoIndex = Math.max(0, this.photoCount - 1);
+    if (this.contentIndex > this.photoCount - 1) {
+      this.contentIndex = Math.max(0, this.photoCount - 1);
     }
   }
 
@@ -212,8 +228,8 @@ export class LinneausApp extends LitElem {
     this.router.questionId = this.questionIndex;
 
     this.loadContentCount().then(() => {
-      if (this.photoIndex > this.photoCount - 1) {
-        this.photoIndex = Math.max(0, this.photoCount - 1);
+      if (this.contentIndex > this.photoCount - 1) {
+        this.contentIndex = Math.max(0, this.photoCount - 1);
         //this.requestUpdate();
       }
     });
@@ -223,23 +239,23 @@ export class LinneausApp extends LitElem {
   }
 
   onLeft() {
-    this.photoIndex--;
+    this.contentIndex--;
 
-    if (this.photoIndex < 0) {
-      this.photoIndex = Math.max(0, this.photoCount - 1);
+    if (this.contentIndex < 0) {
+      this.contentIndex = Math.max(0, this.photoCount - 1);
     }
-    this.router.contentId = this.photoIndex; // todo use question id
+    this.router.contentId = this.contentIndex; // todo use question id
 
     this.loadAnswer();
   }
 
   onRight() {
-    this.photoIndex++;
+    this.contentIndex++;
 
-    if (this.photoIndex > this.photoCount - 1) {
-      this.photoIndex = 0;
+    if (this.contentIndex > this.photoCount - 1) {
+      this.contentIndex = 0;
     }
-    this.router.contentId = this.photoIndex; // todo use question id
+    this.router.contentId = this.contentIndex; // todo use question id
 
     this.loadAnswer();
   }
@@ -256,16 +272,21 @@ export class LinneausApp extends LitElem {
   }
 
   handleKeyDown(event) {
-    if (event.keyCode == Keys.LEFT) {
-      this.onLeft();
-    } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
-      this.onRight();
-    } else if (event.keyCode == Keys.UP) {
+    if (this.question && this.question.type !== 'free-text') {
+      if (event.keyCode == Keys.LEFT) {
+        this.onLeft();
+      } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
+        this.onRight();
+      }
+    }
+
+    if (event.keyCode == Keys.UP) {
       this.onUp();
     } else if (event.keyCode == Keys.DOWN) {
       this.onDown();
     }
 
+    // TODO bind this in the component itself
     if (this.question.type === "pick-one") {
       this.handlePickOneKeypress(event);
     }
@@ -291,6 +312,46 @@ export class LinneausApp extends LitElem {
     return html`<p id="photo-path">${this.imagePath}</p>`;
   }
 
+  /*
+   * Renders the correct content
+   */
+  renderContent() {
+    return html`
+    <linneaus-photo
+      .question=${this.question}
+      .contentIndex=${this.contentIndex}></linneaus-photo>
+    `
+  }
+
+  /*
+   * Render the correct input based on question type.
+   *
+   * Supported:
+   * - pick-one
+   * - free-text
+   */
+  renderInput() {
+    if (!this.question) {
+      return html`<p>Loading...</p>`;
+    }
+
+    const question = this.question;
+
+    if (question.type === 'pick-one') {
+      return html`<linneaus-pick-one-input
+        .question=${this.question}
+        .selectedOption=${this.selectedOption}>
+      </linneaus-pick-one-input>
+      `;
+    } else if (question.type === 'free-text') {
+      return html`<linneaus-text-input
+        @save-answer=${this.saveEventAnswer}
+        .question=${this.question}></linneaus-text-input>`;
+    } else {
+      throw new Error(`unsupported type ${question.type}`);
+    }
+  }
+
   render() {
     const backgroundModulus = this.questionIndex % BACKGROUNDS.length;
     const backgroundColour = BACKGROUNDS[backgroundModulus];
@@ -306,7 +367,7 @@ export class LinneausApp extends LitElem {
       ? 'active'
       : 'none';
 
-    return html`
+      return html`
    <body>
     <h1>Linneaus</h1>
 
@@ -314,32 +375,22 @@ export class LinneausApp extends LitElem {
     <linneaus-navigation-links
       .photoCount=${this.photoCount}
       .questionId=${this.questionIndex}
-      .contentId=${this.photoIndex}></linneaus-navigation-links>
-    <linneaus-content
-      .questions=${this.questions}
-      .questionIndex=${this.questionIndex}
-      .photoIndex=${this.photoIndex}></linneaus-content>
+      .contentId=${this.contentIndex}></linneaus-navigation-links>
+
+    ${this.renderContent()}
 
     <linneaus-photo-progress
-      .photoIndex=${this.photoIndex}
+      .contentIndex=${this.contentIndex}
       .photoCount=${this.photoCount}
       .questionsAnswered=${this.questionsAnswered}
       ></linneaus-photo-progress>
 
     ${this.renderFileInfo()}
 
-    <linneaus-question
-      .questions=${this.questions}
-      .questionIndex=${this.questionIndex}>
-    </linneaus-question>
+    <linneaus-question .question=${this.question}></linneaus-question>
 
-    <linneaus-pick-one-input
-      .questions=${this.questions}
-      .questionIndex=${this.questionIndex}
-      .selectedOption=${this.selectedOption}>
-    </linneaus-pick-one-input>
-
-   </body>
+    ${this.renderInput()}
+  </body>
     `;
   }
 }

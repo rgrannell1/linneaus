@@ -48,7 +48,7 @@ export function getContentCount(_, services) {
     ] = await Promise.all([
       cache.getContent(),
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -88,7 +88,7 @@ export function setAnswer(_, services) {
     ] = await Promise.all([
       cache.getContent(),
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     if (!ctx.request.hasBody) {
@@ -156,7 +156,7 @@ export function getAnswer(_, services) {
     ] = await Promise.all([
       cache.getContent(),
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -169,6 +169,7 @@ export function getAnswer(_, services) {
     }
 
     const contentList = question.relevantContent(content, answers);
+
     const selectedContent = contentList[index];
     if (!selectedContent) {
       ctx.response.status = 404;
@@ -179,7 +180,7 @@ export function getAnswer(_, services) {
     }
 
     const answer = answers.find((answer: Answer) => {
-      return answer.contentId === selectedContent &&
+      return answer.contentId === selectedContent.id &&
         answer.questionId === questionId;
     });
 
@@ -187,13 +188,13 @@ export function getAnswer(_, services) {
       ctx.response.status = 200;
       ctx.response.body = JSON.stringify({
         error:
-          `No answer found for question ${questionId} and content ${selectedContent}`,
+          `No answer found for question ${questionId} and content ${selectedContent.id}`,
       });
       return;
     }
 
     ctx.response.body = JSON.stringify({
-      contentId: selectedContent,
+      contentId: selectedContent.id,
       questionId,
       answer: answer.answerId,
     });
@@ -215,7 +216,7 @@ export function getUnanswered(_, services) {
     ] = await Promise.all([
       cache.getContent(),
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -279,7 +280,7 @@ export function getAnswerCount(_, services) {
       answers,
     ] = await Promise.all([
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -320,7 +321,7 @@ export function getContent(_, services) {
     ] = await Promise.all([
       cache.getContent(),
       cache.getQuestions(),
-      cache.getAnswers(questionId),
+      cache.getAnswers(),
     ]);
 
     const question = questions.find((question) => question.id === questionId);
@@ -345,10 +346,10 @@ export function getContent(_, services) {
     if (qs.get("mode") === "photo") {
       await ctx.send({
         root: "/",
-        path: selectedContent,
+        path: selectedContent.value,
       });
     } else {
-      ctx.response.body = selectedContent;
+      ctx.response.body = selectedContent.value;
     }
   };
 }

@@ -6,6 +6,7 @@ const DB_PATH = "/home/rg/.mirror-manifest.db";
 export type PhotoContent = {
   id: string;
   fpath: string;
+  value: string;
 };
 
 /*
@@ -16,7 +17,13 @@ export type PhotoContent = {
  * @returns A PhotoContent object
  */
 function transformer(row): PhotoContent {
-  return row[0];
+  const fpath = row[0];
+
+  return {
+    id: fpath,
+    fpath,
+    value: fpath,
+  };
 }
 
 /*
@@ -27,7 +34,7 @@ function transformer(row): PhotoContent {
  * @returns A class that implements IContentLoader
  */
 export class MirrorContentLoader extends SqliteContent<PhotoContent> {
-  db: DB;
+  declare db: DB;
 
   constructor(dbPath: string = DB_PATH) {
     const db = new DB(dbPath);

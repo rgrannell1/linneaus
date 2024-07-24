@@ -2,37 +2,54 @@ import { LitElem } from "/js/library/litelem.js";
 import { html } from "/js/library/lit.js";
 import { API } from "/js/api.js";
 
-export class LinnaeusContent extends LitElem {
+export class LinnaeusPhoto extends LitElem {
   static get properties() {
     return {
-      photoIndex: {
+      contentIndex: {
         type: Number,
         state: true,
       },
-      questions: {
-        type: Array,
+      question: {
+        type: Object,
         state: true,
-      },
-      questionIndex: {
-        type: String,
-        state: true,
-      },
+      }
     };
   }
 
   render() {
-    const question = this.questions[this.questionIndex];
-    if (!question) {
+    if (!this.question) {
       return html`<p>Loading...</p>`;
     }
-    const index = typeof this.photoIndex === "undefined" ? 0 : this.photoIndex;
 
     return html`
     <image width="600" id="preview-image" src="${
-      API.photoUrl(question.id, index)
+      API.photoUrl(this.question.id, this.contentIndex)
     }"></image>
     `;
   }
 }
 
-customElements.define("linneaus-content", LinnaeusContent);
+customElements.define("linneaus-photo", LinnaeusPhoto);
+
+export class LinnaeusText extends LitElem {
+  static get properties() {
+    return {
+      question: {
+        type: Object,
+        state: true,
+      }
+    };
+  }
+
+  render() {
+    if (!question) {
+      return html`<p>Loading...</p>`;
+    }
+
+    return html`
+    <p>Testing!</p>
+    `;
+  }
+}
+
+customElements.define("linneaus-text", LinnaeusText);

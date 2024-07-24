@@ -9,7 +9,7 @@
  * This file provides filters to help you select questions that contextually make sense.
  */
 
-import type { Answer, Question } from "./types/index.ts";
+import type { Answer, Question, Content } from "./types/index.ts";
 
 /*
  * Find content with a specific question answered, with the expected answer
@@ -17,11 +17,11 @@ import type { Answer, Question } from "./types/index.ts";
  * @param questionId - The question ID to filter by
  * @param expectedAnswer - The expected answer to filter by
  */
-export function answeredQuestion<Content>(
+export function answeredQuestion<T>(
   questionId: string,
   expectedAnswer: string,
 ) {
-  return (_: Content[], answers: Answer[]): Content[] => {
+  return (content: Content<T>[], answers: Answer[]): Content<T>[] => {
     const matchingIds: Set<string> = new Set([]);
 
     for (const answer of answers) {
@@ -32,7 +32,7 @@ export function answeredQuestion<Content>(
       }
     }
 
-    return Array.from(matchingIds) as Content[]; // TODO not generalisable
+    return content.filter((content) => matchingIds.has(content.id));
   };
 }
 

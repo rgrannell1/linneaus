@@ -4,6 +4,7 @@
 
 import type {
   Config,
+  Content,
   IContentLoader,
   IQuestionLoader,
   Question,
@@ -36,14 +37,14 @@ const ROOT_DIR = `${Deno.cwd()}/static`;
  *
  * @returns The services for Linnaeus
  */
-export async function linnaeusServices<Content>(
-  contentLoader: IContentLoader<Content>,
-  questionsLoader: IQuestionLoader<Question<Content>>,
-): Promise<Services<Content>> {
-  const storage = new SqliteStorage<Content>();
+export async function linnaeusServices<T>(
+  contentLoader: IContentLoader<Content<T>>,
+  questionsLoader: IQuestionLoader<Question<Content<T>>>,
+): Promise<Services<Content<T>>> {
+  const storage = new SqliteStorage<Content<T>>();
   await storage.init(questionsLoader as any);
 
-  const cache = new Cache<Content>(
+  const cache = new Cache<T>(
     contentLoader,
     questionsLoader,
     storage,
@@ -65,8 +66,8 @@ export async function linnaeusServices<Content>(
  *
  * @returns The router for Linnaeus
  */
-export function linnaeusRouter<Content>(
-  services: Services<Content>,
+export function linnaeusRouter<T>(
+  services: Services<Content<T>>,
   config: Config,
 ): Router {
   const router = new Router();
@@ -123,8 +124,8 @@ export function linnaeusRouter<Content>(
  *
  * @returns The application for Linnaeus
  */
-export function linnaeusApp<Content>(
-  services: Services<Content>,
+export function linnaeusApp<T>(
+  services: Services<Content<T>>,
   config: Config,
 ): Application {
   const router = linnaeusRouter(services, config);

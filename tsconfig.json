@@ -8,7 +8,8 @@
     "noEmit": true,
     "pretty": true,
     "resolveJsonModule": true,
-    "target": "esnext"
+    "target": "esnext",
+    "allowImportingTsExtensions": true
   },
   "include": [
     "./**/*.ts"

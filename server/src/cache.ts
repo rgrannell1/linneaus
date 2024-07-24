@@ -3,27 +3,28 @@ import type {
   IDB,
   IQuestionLoader,
   Question,
-} from "./types.ts";
+  Content
+} from "./types/index.ts";
 
-export class Cache<Content> {
-  contentLoader: IContentLoader<Content>;
-  questionsLoader: IQuestionLoader<Question<Content>>;
-  storage?: IDB<Content>;
+export class Cache<T> {
+  contentLoader: IContentLoader<Content<T>>;
+  questionsLoader: IQuestionLoader<Question<Content<T>>>;
+  storage?: IDB<Content<T>>;
 
-  _content: Content[];
-  _questions: Question<Content>[];
+  _content: Content<T>[];
+  _questions: Question<Content<T>>[];
 
   constructor(
-    contentLoader: IContentLoader<Content>,
-    questionsLoader: IQuestionLoader<Question<Content>>,
-    storage: IDB<Content>,
+    contentLoader: IContentLoader<Content<T>>,
+    questionsLoader: IQuestionLoader<Question<Content<T>>>,
+    storage: IDB<Content<T>>,
   ) {
     this.contentLoader = contentLoader;
     this.questionsLoader = questionsLoader;
     this.storage = storage;
   }
 
-  async getContent(): Promise<Content[]> {
+  async getContent(): Promise<Content<T>[]> {
     if (this._content) {
       return this._content;
     }
@@ -44,6 +45,7 @@ export class Cache<Content> {
   }
 
   async getAnswers(questionId: string) {
+    // TODO actually make this work
     return await Array.fromAsync(this.storage.getAnswers(questionId));
   }
 }

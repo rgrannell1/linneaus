@@ -1,6 +1,18 @@
 import { Cache } from "../cache.ts";
 
 /*
+ * All content should provide:
+ * - id: a unique identifier
+ * - type: a string that describes the type of content. This is used
+ *     to render as text, photo, or another supported type
+ */
+export type Content<T> = {
+  id: string,
+  type: string,
+  value: T
+};
+
+/*
  * This file defines types used within Linneaus
  */
 export type Config = {
@@ -43,7 +55,7 @@ export interface IClose {
 }
 
 export interface IGetAnswers {
-  getAnswers(): AsyncGenerator<Answer>;
+  getAnswers(questionId: string): AsyncGenerator<Answer>;
 }
 
 export interface ISetAnswer {
@@ -71,9 +83,9 @@ export type Services<Content> = {
  * Implementations of this interface can supply content
  * to Linnaeus
  */
-export interface IContentLoader<Content> {
+export interface IContentLoader<T> {
   init(): Promise<void>;
-  getContent(): AsyncGenerator<Content>;
+  getContent(): AsyncGenerator<T>;
   close(): Promise<void>;
 }
 

@@ -30,6 +30,12 @@ create table if not exists answers (
  */
 export class SqliteStorage<Content> implements IDB<Content> {
   db: DB;
+
+  static SUPPORTED_TYPES = new Set([
+    'pick-one',
+    'free-text'
+  ])
+
   constructor(fpath: string = ".linnaeus.db") {
     this.db = new DB(fpath);
   }
@@ -40,7 +46,7 @@ export class SqliteStorage<Content> implements IDB<Content> {
     );
 
     for await (const { id, type, text } of questionLoader.getQuestions()) {
-      if (type !== 'pick-one') {
+      if (!SqliteStorage.SUPPORTED_TYPES.has(type)) {
         throw new Error(`Unsupported question type: ${type}`);
       }
 
@@ -56,10 +62,28 @@ export class SqliteStorage<Content> implements IDB<Content> {
    *
    * @returns {AsyncGenerator<Answer>}
    */
-  async *getAnswers(): AsyncGenerator<Answer> {
+  async *getAnswers(questionId?: string): AsyncGenerator<Answer> {
+    if (!questionId) {
+      for (
+        const [contentId, questionId, answerId, answer] of this.db.query(
+          "select contentId, questionId, answerId, answer from answers"
+        )
+      ) {
+        yield {
+          contentId,
+          questionId,
+          answerId,
+          answer
+        };
+      }
+
+      return;
+    }
+
     for (
-      const [contentId, questionId, answerId, answer] of this.db.query(
-        "select contentId, questionId, answerId, answer from answers",
+      const [contentId, answerId, answer] of this.db.query(
+        "select contentId, answerId, answer from answers where questionId = ?",
+        [questionId]
       )
     ) {
       yield {
