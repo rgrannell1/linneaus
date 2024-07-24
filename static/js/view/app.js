@@ -148,8 +148,14 @@ export class LinneausApp extends LitElem {
       this.question.id,
     );
 
-    if (answer) {
+    if (!answer) {
+      return;
+    }
+
+    if (this.question.type === "pick-one") {
       this.selectedOption = parseInt(answer.answer, 10);
+    } else if (this.question.type === "free-text" && answer.answer) {
+      document.querySelector("#free-text-input").value = answer.answer;
     }
   }
 
@@ -268,6 +274,8 @@ export class LinneausApp extends LitElem {
   }
 
   handleKeyDown(event) {
+
+    // clear free text input on left/right
     if (this.question.type === "free-text"  && event.target.id !== 'free-text-input') {
       if (event.keyCode == Keys.LEFT || event.keyCode == Keys.RIGHT) {
         document.querySelector("#free-text-input").value = '';

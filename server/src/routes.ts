@@ -193,11 +193,24 @@ export function getAnswer(_, services) {
       return;
     }
 
-    ctx.response.body = JSON.stringify({
-      contentId: selectedContent.id,
-      questionId,
-      answer: answer.answerId,
-    });
+    if (question.type === "pick-one") {
+      ctx.response.body = JSON.stringify({
+        contentId: selectedContent.id,
+        questionId,
+        answer: answer.answerId,
+      });
+    } else if (question.type === "free-text") {
+      ctx.response.body = JSON.stringify({
+        contentId: selectedContent.id,
+        questionId,
+        answer: answer.answer,
+      });
+    } else {
+      ctx.response.status = 500;
+      ctx.response.body = JSON.stringify({
+        error: `Unknown question type ${question.type}`,
+      });
+    }
   };
 }
 
