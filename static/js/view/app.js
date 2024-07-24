@@ -268,12 +268,17 @@ export class LinneausApp extends LitElem {
   }
 
   handleKeyDown(event) {
-    if (this.question && this.question.type !== "free-text") {
+
+    if (this.question && event.target.id !== 'free-text-input')  {
       if (event.keyCode == Keys.LEFT) {
         this.onLeft();
-      } else if (event.keyCode == Keys.RIGHT || event.keyCode == Keys.ENTER) {
+      } else if (event.keyCode == Keys.RIGHT) {
         this.onRight();
       }
+    }
+
+    if (event.keyCode == Keys.ENTER) {
+      this.onRight();
     }
 
     if (event.keyCode == Keys.UP) {
