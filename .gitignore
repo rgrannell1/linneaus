@@ -3,3 +3,4 @@ __pycache__
 *.db
 '[object Object]'
 answers.csv
+questions.json

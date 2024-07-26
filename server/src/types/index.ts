@@ -46,8 +46,8 @@ export type Question<Content> = PickOneQuestion<Content>;
 /*
  * +++ +++ +++ Interfaces +++ +++ +++
  */
-export interface IInit<Content> {
-  init(questionLoader: IQuestionLoader<Question<Content>>): Promise<void>;
+export interface IInit<T> {
+  init(questionLoader: IQuestionLoader<Question<T>>): Promise<void>;
 }
 
 export interface IClose {
@@ -62,12 +62,14 @@ export interface ISetAnswer {
   setAnswer(answer: Answer): Promise<void>;
 }
 
+export type RowTransformer<T> = (row: unknown[]) => Content<T>;
+
 /*
  * This is the interface required by the Linnaeus
  * server
  */
-export type IDB<Content> =
-  & IInit<Content>
+export type IDB<T> =
+  & IInit<T>
   & IClose
   & IGetAnswers
   & ISetAnswer;

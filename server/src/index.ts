@@ -6,6 +6,7 @@ import type {
   Config,
   Content,
   IContentLoader,
+  IDB,
   IQuestionLoader,
   Question,
   Services,
@@ -40,8 +41,8 @@ const ROOT_DIR = `${Deno.cwd()}/static`;
 export async function linnaeusServices<T>(
   contentLoader: IContentLoader<Content<T>>,
   questionsLoader: IQuestionLoader<Question<Content<T>>>,
+  storage: IDB<T>
 ): Promise<Services<Content<T>>> {
-  const storage = new SqliteStorage<Content<T>>();
   await storage.init(questionsLoader as any);
 
   const cache = new Cache<T>(

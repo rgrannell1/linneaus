@@ -3,9 +3,7 @@
  * provide content to Linneaus
  */
 import { DB, parseCsv } from "./deps.ts";
-import { IContentLoader } from "./types/index.ts";
-
-type RowTransformer<Content> = (row: unknown) => Content;
+import { Content, IContentLoader, RowTransformer } from "./types/index.ts";
 
 /*
  * Read Sqlite content from a file.
@@ -13,15 +11,15 @@ type RowTransformer<Content> = (row: unknown) => Content;
  * A SQL query is provided, and a transformer function converts the retrieved rows into
  * the desired content (with type Content)
  */
-export class SqliteContent<Content> implements IContentLoader<Content> {
+export class SqliteContent<T> implements IContentLoader<T> {
   db: DB;
   query: string;
-  transformer: RowTransformer<Content>;
+  transformer: RowTransformer<T>;
 
   constructor(
     fpath: string,
     query: string,
-    transformer: RowTransformer<Content>,
+    transformer: RowTransformer<T>,
   ) {
     this.db = new DB(fpath);
     this.query = query;
@@ -33,7 +31,7 @@ export class SqliteContent<Content> implements IContentLoader<Content> {
   /*
    * Yield all the content from the database, after transforming it
    */
-  async *getContent(): AsyncGenerator<Content> {
+  async *getContent(): AsyncGenerator<Content<T>> {
     for (const row of this.db.query(this.query)) {
       yield this.transformer(row);
     }
