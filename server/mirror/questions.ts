@@ -202,6 +202,26 @@ const q11 = {
   text: "Describe this image",
 };
 
+const q12 = {
+  id: "q12",
+  type: "pick-one",
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q01",
+    QuestionParts.choiceId(q01, "Transport"),
+  ),
+  text: "What vehicle is the subject of this photo?",
+  choices: [
+    "Plane",
+    "Helicopter",
+    "Train",
+    "Boat",
+    "Road Transport",
+    "Spacecraft",
+    "Multiple",
+    "Other",
+  ],
+}
+
 export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q01,
   q02,
@@ -215,4 +235,5 @@ export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q09,
   q10,
   q11,
+  q12
 ]);
