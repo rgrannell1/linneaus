@@ -53,6 +53,12 @@ export class LinneausApp extends LitElem {
         type: Boolean,
         state: true,
       },
+
+      // tags
+      tags: {
+        type: Array,
+        state: true,
+      },
     };
   }
 
@@ -156,6 +162,8 @@ export class LinneausApp extends LitElem {
       this.selectedOption = parseInt(answer.answer, 10);
     } else if (this.question.type === "free-text" && answer.answer) {
       document.querySelector("#free-text-input").value = answer.answer;
+    } else if (this.question.type === "tags") {
+      console.log('removing code path');
     }
   }
 
@@ -183,6 +191,8 @@ export class LinneausApp extends LitElem {
         "",
         option,
       );
+    } else if (this.question.type === "tags") {
+      console.error('unimplemented')
     } else {
       throw new Error(`question-type "${this.question.type}" is not supported`);
     }
@@ -273,6 +283,7 @@ export class LinneausApp extends LitElem {
     this.saveAnswer(value);
   }
 
+  // THIS IS SO BAD. MOVE TO INPUTS
   handleKeyDown(event) {
 
     // clear free text input on left/right
@@ -290,8 +301,13 @@ export class LinneausApp extends LitElem {
       }
     }
 
+    // allow enter to skip to next question, when entered on blank input field
     if (event.keyCode == Keys.ENTER) {
-      this.onRight();
+      if (this.question.type !== "tags") {
+        this.onRight();
+      } else if (event.target.value === '') {
+        this.onRight();
+      }
     }
 
     if (event.keyCode == Keys.UP) {
@@ -305,7 +321,7 @@ export class LinneausApp extends LitElem {
       this.handlePickOneKeypress(event);
     } else if (this.question.type === "free-text") {
       this.handleFreeTextKeypress(event);
-    };
+    }
   }
 
   incrementQuestionIndex() {
@@ -359,6 +375,11 @@ export class LinneausApp extends LitElem {
       return html`<linneaus-text-input
         @save-answer=${this.saveEventAnswer}
         .question=${this.question}></linneaus-text-input>`;
+    } else if (question.type === "tags") {
+      return html`<linneaus-tags-input
+        @save-answer=${this.saveEventAnswer}
+        .contentIndex=${this.contentIndex}
+        .question=${this.question}></linneaus-tags-input>`;
     } else {
       throw new Error(`unsupported type ${question.type}`);
     }

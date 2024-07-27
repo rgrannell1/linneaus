@@ -28,6 +28,18 @@ export function getQuestions(_, services) {
   };
 }
 
+export function getSuggestions(_, services) {
+  const {
+    storage
+  } = services;
+
+  return async function (ctx: any) {
+    const { questionId } = ctx.params;
+
+    ctx.response.body = await Array.fromAsync(storage.getSuggestions(questionId));
+  }
+}
+
 /*
  * GET /content/:questionId/count
  *
@@ -204,6 +216,12 @@ export function getAnswer(_, services) {
         contentId: selectedContent.id,
         questionId,
         answer: answer.answer,
+      });
+    } else if (question.type === "tags") {
+      ctx.response.body = JSON.stringify({
+        contentId: selectedContent.id,
+        questionId,
+        answer: answer.answer.split(',').filter(tag => tag.trim()),
       });
     } else {
       ctx.response.status = 500;

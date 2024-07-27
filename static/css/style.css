@@ -61,3 +61,31 @@ input[type="text"] {
 input[type="text"]:focus {
   border: 4px solid white;
 }
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tag {
+  display: inline-block;
+  border: 4px solid black;
+  padding: 0px 20px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.delete-tag {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.delete-tag:hover {
+  color: white;
+}

@@ -58,6 +58,12 @@ export interface IGetAnswers {
   getAnswers(questionId: string): AsyncGenerator<Answer>;
 }
 
+export interface IGetSuggestions {
+  getSuggestions(
+    questionId: string
+  ): AsyncGenerator<string>;
+}
+
 export interface ISetAnswer {
   setAnswer(answer: Answer): Promise<void>;
 }
@@ -71,6 +77,7 @@ export type RowTransformer<T> = (row: unknown[]) => Content<T>;
 export type IDB<T> =
   & IInit<T>
   & IClose
+  & IGetSuggestions
   & IGetAnswers
   & ISetAnswer;
 

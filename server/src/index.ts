@@ -18,6 +18,7 @@ import {
   getAnswer,
   getAnswerCount,
   getContent,
+  getSuggestions,
   getContentCount,
   getQuestions,
   getUnanswered,
@@ -93,6 +94,11 @@ export function linnaeusRouter<T>(
       "/questions/:questionId/content/:index",
       oakCors(),
       getContent(config, services),
+    )
+    .get(
+      "/questions/:questionId/suggestions",
+      oakCors(),
+      getSuggestions(config, services),
     )
     .get(
       "/answers/:questionId/content/:index",

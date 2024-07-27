@@ -34,6 +34,7 @@ export class SqliteStorage<Content> implements IDB<Content> {
   static SUPPORTED_TYPES = new Set([
     "pick-one",
     "free-text",
+    "tags"
   ]);
 
   constructor(fpath: string = ".linnaeus.db") {
@@ -54,6 +55,29 @@ export class SqliteStorage<Content> implements IDB<Content> {
         "insert or replace into questions (id, text) values (?, ?)",
         [id, text],
       );
+    }
+  }
+
+  async *getSuggestions(questionId: string): AsyncGenerator<string> {
+    const set = new Map<string, number>();
+
+    for await (const [answers] of this.db.query(
+      "select answer from answers where questionId = ? order by answer",
+      [questionId],
+    )) {
+      for (const answer of answers.split(',')) {
+        if (answer.trim()) {
+          set.set(answer, (set.get(answer) || 0) + 1);
+        }
+      }
+    }
+
+    const sortedSuggestions = Array.from( set ).toSorted((left, right) => {
+      return right[1] - left[1];
+    });
+
+    for (const [answer, _] of sortedSuggestions) {
+      yield answer;
     }
   }
 
