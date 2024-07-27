@@ -35,7 +35,7 @@ export class API {
       return;
     }
   }
-  async getSuggestions(idx, question) {
+  async getSuggestions(question) {
     const res = await fetch(`${ENDPOINT}/questions/${question}/suggestions`);
     return res.json();
   }
