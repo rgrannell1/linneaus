@@ -212,7 +212,6 @@ export class LinnaeusTagsInput extends LitElem {
     }
 
     const suggestions = await this.api.getSuggestions(
-      this.contentIndex,
       this.question.id,
     );
 

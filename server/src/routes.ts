@@ -36,7 +36,8 @@ export function getSuggestions(_, services) {
   return async function (ctx: any) {
     const { questionId } = ctx.params;
 
-    ctx.response.body = await Array.fromAsync(storage.getSuggestions(questionId));
+    const suggestions = await Array.fromAsync(storage.getSuggestions(questionId));
+    ctx.response.body = suggestions;
   }
 }
 
@@ -238,7 +239,7 @@ export function getUnanswered(_, services) {
   } = services;
 
   return async function (ctx: any) {
-    const { questionId } = ctx.params;
+    const { questionId, startIndex } = ctx.params;
 
     const [
       content,
@@ -261,35 +262,34 @@ export function getUnanswered(_, services) {
 
     const contentList = question.relevantContent(content, answers);
 
-    if (!selectedContent) {
+    if (!contentList) {
       ctx.response.status = 404;
       ctx.response.body = JSON.stringify({
-        error: `No content with ID ${index} found`,
+        error: `No content found`,
       });
       return;
     }
 
-    // TODO
+    const answeredSet = new Set(answers.map((answer: Answer) => answer.contentId));
 
-    const answer = answers.find((answer: Answer) => {
-      return answer.contentId === selectedContent &&
-        answer.questionId === questionId;
-    });
-
-    if (!answer) {
-      ctx.response.status = 200;
-      ctx.response.body = JSON.stringify({
-        error:
-          `No answer found for question ${questionId} and content ${selectedContent}`,
-      });
-      return;
+    let idx = 0; // bad
+    for (const content of contentList.slice(startIndex ?? 0)) {
+      if (!answeredSet.has(content.id)) {
+        ctx.response.body = JSON.stringify({
+          index: idx + 1,
+          questionId,
+        });
+        return;
+      }
+      idx++;
     }
 
+    ctx.response.status = 404;
     ctx.response.body = JSON.stringify({
-      contentId: selectedContent,
-      questionId,
-      answer: answer.answerId,
+      error: `No unanswered content found after ${startIndex}`,
     });
+
+    return
   };
 }
 

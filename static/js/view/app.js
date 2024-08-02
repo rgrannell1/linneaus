@@ -407,7 +407,7 @@ export class LinneausApp extends LitElem {
     <linneaus-navigation-guide></linneaus-navigation-guide>
     <linneaus-navigation-links
       .photoCount=${this.photoCount}
-      .questionId=${this.questionIndex}
+      .question=${this.question}
       .contentId=${this.contentIndex}></linneaus-navigation-links>
 
     ${this.renderContent()}

@@ -18,6 +18,7 @@ const q01 = {
     "Landscape",
     "Cityscape",
     "Transport",
+    "Astrophotography",
     "Other",
   ],
 };
@@ -232,6 +233,16 @@ const q13 = {
   text: "What model of plane is the subject of this photo?"
 }
 
+const q14 = {
+  id: "q14",
+  type: "tags",
+  relevantContent: Filters.answeredQuestion<PhotoContent>(
+    "q02",
+    QuestionParts.choiceId(q02, "Bird"),
+  ),
+  text: "What is the binomial name of the bird?"
+};
+
 export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q01,
   q02,
@@ -246,5 +257,6 @@ export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q10,
   q11,
   q12,
-  q13
+  q13,
+  q14
 ]);

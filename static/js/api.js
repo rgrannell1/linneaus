@@ -12,6 +12,11 @@ export class API {
     return res.json();
   }
 
+  async getUnanswered(question, contentId) {
+    const res = await fetch(`${ENDPOINT}/answers/${question}/unanswered?startIndex=${contentId}`);
+    return res.json();
+  }
+
   async getQuestions() {
     const res = await fetch(`${ENDPOINT}/questions`);
     return res.json();

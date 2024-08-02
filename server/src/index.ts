@@ -106,7 +106,7 @@ export function linnaeusRouter<T>(
       getAnswer(config, services),
     )
     .get(
-      "/answers/:questionId/nextUnanswered",
+      "/answers/:questionId/unanswered",
       oakCors(),
       getUnanswered(config, services),
     )
