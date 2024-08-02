@@ -59,22 +59,6 @@ const q03 = {
   ],
 };
 
-const q03_5 = {
-  id: "q03_5",
-  type: "pick-one",
-  relevantContent: Filters.answeredQuestion<PhotoContent>(
-    "q01",
-    QuestionParts.choiceId(q01, "Wildlife"),
-  ),
-  text: "What conditions did these animals live in?",
-  choices: [
-    "Captivity",
-    "Wild",
-    "Unsure",
-    "Other",
-  ],
-};
-
 const q04 = {
   id: "q04",
   type: "pick-one",
@@ -247,7 +231,6 @@ export const questionLoader = new LiteralQuestionLoader<PhotoContent>([
   q01,
   q02,
   q03,
-  q03_5,
   q04,
   q05,
   q06,

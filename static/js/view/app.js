@@ -430,6 +430,10 @@ export class LinneausApp extends LitElem {
     }
 
     const moveToUnanswered = () => {
+      if (this.nextUnansweredId === -1) {
+        return;
+      }
+
       this.contentIndex = this.nextUnansweredId;
       this.router.contentId = this.contentIndex;
 
