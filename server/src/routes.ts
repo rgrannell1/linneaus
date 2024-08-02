@@ -270,13 +270,15 @@ export function getUnanswered(_, services) {
       return;
     }
 
-    const answeredSet = new Set(answers.map((answer: Answer) => answer.contentId));
+    const answeredSet = new Set(answers.filter((answer: Answer) => {
+      return answer.contentId && answer.questionId === questionId;
+    }).map((answer: Answer) => answer.contentId));
 
     let idx = 0; // bad
     for (const content of contentList.slice(startIndex ?? 0)) {
       if (!answeredSet.has(content.id)) {
         ctx.response.body = JSON.stringify({
-          index: idx + 1,
+          index: idx,
           questionId,
         });
         return;
@@ -286,7 +288,8 @@ export function getUnanswered(_, services) {
 
     ctx.response.status = 404;
     ctx.response.body = JSON.stringify({
-      error: `No unanswered content found after ${startIndex}`,
+      error: `No unanswered content found after index ${startIndex ?? 0}`,
+      index: -1
     });
 
     return

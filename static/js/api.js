@@ -13,7 +13,11 @@ export class API {
   }
 
   async getUnanswered(question, contentId) {
-    const res = await fetch(`${ENDPOINT}/answers/${question}/unanswered?startIndex=${contentId}`);
+    const qs = typeof contentId !== 'undefined'
+      ? `?startIndex=${contentId}`
+      : '';
+
+    const res = await fetch(`${ENDPOINT}/answers/${question}/unanswered${qs}`);
     return res.json();
   }
 

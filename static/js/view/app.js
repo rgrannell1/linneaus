@@ -7,7 +7,6 @@ import { Router } from "/js/router.js";
 import "/js/view/content.js";
 import "/js/view/input.js";
 import "/js/view/navigation-guide.js";
-import "/js/view/navigation-links.js";
 import "/js/view/progress.js";
 import "/js/view/question.js";
 
@@ -51,6 +50,10 @@ export class LinneausApp extends LitElem {
       },
       offline: {
         type: Boolean,
+        state: true,
+      },
+      nextUnansweredId: {
+        type: Number,
         state: true,
       },
 
@@ -105,8 +108,8 @@ export class LinneausApp extends LitElem {
       this.loadContentCount(),
       this.loadAnsweredCount(),
       this.loadAnswer(),
-    ]).then(() => {
-    });
+      this.loadUnanswered()
+    ]);
   }
 
   disconnectedCallback() {
@@ -124,6 +127,7 @@ export class LinneausApp extends LitElem {
       this.loadContentCount(),
       this.loadAnsweredCount(),
       this.loadAnswer(),
+      this.loadUnanswered()
     ]).then(() => {
     });
   }
@@ -164,6 +168,17 @@ export class LinneausApp extends LitElem {
       document.querySelector("#free-text-input").value = answer.answer;
     } else if (this.question.type === "tags") {
       console.log('removing code path');
+    }
+  }
+
+  async loadUnanswered() {
+    if (!this.question) {
+      return;
+    }
+    const res = await this.api.getUnanswered(this.question.id, this.contentId);
+
+    if (typeof res.index !== 'undefined') {
+      this.nextUnansweredId = res.index ?? 1;
     }
   }
 
@@ -215,6 +230,7 @@ export class LinneausApp extends LitElem {
     });
     this.loadAnsweredCount();
     this.loadAnswer();
+    this.loadUnanswered();
 
     if (this.contentIndex > this.photoCount - 1) {
       this.contentIndex = Math.max(0, this.photoCount - 1);
@@ -237,8 +253,11 @@ export class LinneausApp extends LitElem {
       }
     });
 
-    this.loadAnsweredCount();
-    this.loadAnswer();
+    Promise.all([
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+      this.loadUnanswered()
+    ]);
   }
 
   onLeft() {
@@ -250,6 +269,7 @@ export class LinneausApp extends LitElem {
     this.router.contentId = this.contentIndex; // todo use question id
 
     this.loadAnswer();
+    this.loadUnanswered();
   }
 
   onRight() {
@@ -261,6 +281,7 @@ export class LinneausApp extends LitElem {
     this.router.contentId = this.contentIndex; // todo use question id
 
     this.loadAnswer();
+    this.loadUnanswered();
   }
 
   handlePickOneKeypress(event) {
@@ -385,6 +406,52 @@ export class LinneausApp extends LitElem {
     }
   }
 
+  /*
+   * Render navigation links
+   *
+   */
+  renderLinks() {
+    const moveToFirst = () => {
+      this.contentIndex = 1;
+      this.router.contentId = this.contentIndex;
+
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+      this.loadUnanswered()
+    }
+
+    const moveToLast = () => {
+      this.contentIndex = this.photoCount - 1;
+      this.router.contentId = this.contentIndex;
+
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+      this.loadUnanswered()
+    }
+
+    const moveToUnanswered = () => {
+      this.contentIndex = this.nextUnansweredId;
+      this.router.contentId = this.contentIndex;
+
+      this.loadAnsweredCount(),
+      this.loadAnswer(),
+      this.loadUnanswered()
+    }
+
+    return html`
+    <p>
+      go to
+      <a href="#"
+        @click=${moveToFirst.bind(this)}>first</a> |
+      <a href="#"
+        @click=${moveToLast.bind(this)}>last</a> |
+      <a href="#"
+        @click=${moveToUnanswered.bind(this)}
+        class="${ this.nextUnansweredId === -1 ? 'disabled' : '' }">unanswered</a>
+    </p>
+    `;
+  }
+
   render() {
     const backgroundModulus = this.questionIndex % BACKGROUNDS.length;
     const backgroundColour = BACKGROUNDS[backgroundModulus];
@@ -405,11 +472,8 @@ export class LinneausApp extends LitElem {
     <h1>Linneaus</h1>
 
     <linneaus-navigation-guide></linneaus-navigation-guide>
-    <linneaus-navigation-links
-      .photoCount=${this.photoCount}
-      .question=${this.question}
-      .contentId=${this.contentIndex}></linneaus-navigation-links>
 
+    ${this.renderLinks()}
     ${this.renderContent()}
 
     <linneaus-photo-progress

@@ -89,3 +89,8 @@ input[type="text"]:focus {
 .delete-tag:hover {
   color: white;
 }
+
+
+a.disabled {
+  color: grey;
+}
