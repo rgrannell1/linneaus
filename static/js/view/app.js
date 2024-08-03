@@ -101,14 +101,20 @@ export class LinneausApp extends LitElem {
           this.offline = true;
         }
       }
-    }, 2_500);
+    }, 5_000);
 
     Promise.all([
       this.loadQuestions(),
+      this.onContentLoad()
+    ]);
+  }
+
+  async onContentLoad() {
+    await Promise.all([
       this.loadContentCount(),
-      this.loadAnsweredCount(),
       this.loadAnswer(),
-      this.loadUnanswered()
+      this.loadUnanswered(),
+      this.loadAnsweredCount()
     ]);
   }
 
@@ -123,13 +129,7 @@ export class LinneausApp extends LitElem {
     this.questions = await this.api.getQuestions();
     this.question = this.questions[this.questionIndex];
 
-    Promise.all([
-      this.loadContentCount(),
-      this.loadAnsweredCount(),
-      this.loadAnswer(),
-      this.loadUnanswered()
-    ]).then(() => {
-    });
+    this.onContentLoad();
   }
 
   async loadContentCount() {
@@ -182,11 +182,6 @@ export class LinneausApp extends LitElem {
     }
   }
 
-  async saveEventAnswer(event) {
-    console.log("receiving");
-    console.log(event);
-  }
-
   async saveAnswer(option) {
     if (!this.question) {
       return;
@@ -228,9 +223,8 @@ export class LinneausApp extends LitElem {
         this.contentIndex = Math.max(0, this.photoCount - 1);
       }
     });
-    this.loadAnsweredCount();
-    this.loadAnswer();
-    this.loadUnanswered();
+
+    this.onContentLoad();
 
     if (this.contentIndex > this.photoCount - 1) {
       this.contentIndex = Math.max(0, this.photoCount - 1);
@@ -253,11 +247,7 @@ export class LinneausApp extends LitElem {
       }
     });
 
-    Promise.all([
-      this.loadAnsweredCount(),
-      this.loadAnswer(),
-      this.loadUnanswered()
-    ]);
+    this.onContentLoad();
   }
 
   onLeft() {
@@ -267,9 +257,7 @@ export class LinneausApp extends LitElem {
       this.contentIndex = Math.max(0, this.photoCount - 1);
     }
     this.router.contentId = this.contentIndex; // todo use question id
-
-    this.loadAnswer();
-    this.loadUnanswered();
+    this.onContentLoad();
   }
 
   onRight() {
@@ -279,9 +267,7 @@ export class LinneausApp extends LitElem {
       this.contentIndex = 0;
     }
     this.router.contentId = this.contentIndex; // todo use question id
-
-    this.loadAnswer();
-    this.loadUnanswered();
+    this.onContentLoad();
   }
 
   handlePickOneKeypress(event) {
@@ -306,7 +292,6 @@ export class LinneausApp extends LitElem {
 
   // THIS IS SO BAD. MOVE TO INPUTS
   handleKeyDown(event) {
-
     // clear free text input on left/right
     if (this.question.type === "free-text"  && event.target.id !== 'free-text-input') {
       if (event.keyCode == Keys.LEFT || event.keyCode == Keys.RIGHT) {
@@ -394,11 +379,9 @@ export class LinneausApp extends LitElem {
       `;
     } else if (question.type === "free-text") {
       return html`<linneaus-text-input
-        @save-answer=${this.saveEventAnswer}
         .question=${this.question}></linneaus-text-input>`;
     } else if (question.type === "tags") {
       return html`<linneaus-tags-input
-        @save-answer=${this.saveEventAnswer}
         .contentIndex=${this.contentIndex}
         .question=${this.question}></linneaus-tags-input>`;
     } else {
@@ -415,18 +398,14 @@ export class LinneausApp extends LitElem {
       this.contentIndex = 1;
       this.router.contentId = this.contentIndex;
 
-      this.loadAnsweredCount(),
-      this.loadAnswer(),
-      this.loadUnanswered()
+      this.onContentLoad();
     }
 
     const moveToLast = () => {
       this.contentIndex = this.photoCount - 1;
       this.router.contentId = this.contentIndex;
 
-      this.loadAnsweredCount(),
-      this.loadAnswer(),
-      this.loadUnanswered()
+      this.onContentLoad();
     }
 
     const moveToUnanswered = () => {
@@ -437,9 +416,7 @@ export class LinneausApp extends LitElem {
       this.contentIndex = this.nextUnansweredId;
       this.router.contentId = this.contentIndex;
 
-      this.loadAnsweredCount(),
-      this.loadAnswer(),
-      this.loadUnanswered()
+      this.onContentLoad();
     }
 
     return html`
